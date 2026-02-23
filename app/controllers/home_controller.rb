@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 class HomeController < ApplicationController
-  layout "home"
+  layout :choose_layout
 
-  before_action :hide_layouts
+  before_action :hide_layouts, except: %i[about]
 
   def about
     set_meta_tag(title: "Earn your first dollar online with Gumroad")
@@ -13,6 +13,8 @@ class HomeController < ApplicationController
     set_meta_tag(property: "og:description", value: "Start selling what you know, see what sticks, and get paid. Simple and effective.")
     set_meta_tag(property: "og:type", value: "website")
     set_meta_tag(property: "og:url", content: about_url)
+
+    render inertia: "Home/About", props: HomePresenter.new.about_props
   end
 
   def features
@@ -88,5 +90,14 @@ class HomeController < ApplicationController
   private
     def hide_layouts
       @hide_layouts = true
+    end
+
+    def choose_layout
+      case action_name
+      when "about"
+        "inertia"
+      else
+        "home"
+      end
     end
 end

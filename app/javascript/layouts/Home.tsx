@@ -7,7 +7,7 @@ type Props = {
   children: React.ReactNode;
 };
 
-export function BlogLayout({ children }: Props) {
+export default function HomeLayout({ children }: Props) {
   return (
     <div className="flex flex-1 flex-col bg-white text-black">
       <div className="flex flex-1 flex-col font-['ABC_Favorit'] text-base leading-relaxed font-normal tracking-tight">

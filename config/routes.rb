@@ -236,7 +236,6 @@ Rails.application.routes.draw do
       end
 
       namespace :internal do
-        resources :home_page_numbers, only: :index
         namespace :helper do
           post :webhook, to: "webhook#handle"
 

@@ -170,7 +170,7 @@ export const HomeNav = () => {
     { href: Routes.gumroad_blog_root_path(), label: "Blog", isInertia: true },
     { href: Routes.pricing_path(), label: "Pricing" },
     { href: Routes.features_path(), label: "Features" },
-    { href: Routes.about_path(), label: "About" },
+    { href: Routes.about_path(), label: "About", isInertia: true },
   ];
 
   return (

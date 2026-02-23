@@ -7,7 +7,7 @@ import { incrementPostViews } from "$app/data/view_event";
 import { formatPostDate } from "$app/utils/date";
 
 import { NavigationButton } from "$app/components/Button";
-import { BlogLayout } from "$app/components/GumroadBlog/Layout";
+import HomeLayout from "$app/layouts/Home";
 import { Icon } from "$app/components/Icons";
 import { LoadingSpinner } from "$app/components/LoadingSpinner";
 import { useRichTextEditor } from "$app/components/RichTextEditor";
@@ -47,7 +47,7 @@ function ShowPage() {
   const publishedAtFormatted = formatPostDate(published_at, userAgentInfo.locale);
 
   return (
-    <BlogLayout>
+    <HomeLayout>
       <div className="scoped-tailwind-preflight">
         <div className="container mx-auto px-8 py-16 sm:px-6 md:py-24 lg:px-8">
           <div className="mx-auto max-w-3xl">
@@ -81,7 +81,7 @@ function ShowPage() {
           </div>
         </div>
       </div>
-    </BlogLayout>
+    </HomeLayout>
   );
 }
 

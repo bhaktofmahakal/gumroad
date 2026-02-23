@@ -7,7 +7,7 @@ import { cast } from "ts-safe-cast";
 import { formatPostDate } from "$app/utils/date";
 import { gumroad_blog_post_path } from "$app/utils/routes";
 
-import { BlogLayout } from "$app/components/GumroadBlog/Layout";
+import HomeLayout from "$app/layouts/Home";
 import { Tabs, Tab } from "$app/components/ui/Tabs";
 
 import placeholderFeatureImage from "../../../../assets/images/blog/post-placeholder.jpg";
@@ -259,7 +259,7 @@ const IndexPage = () => {
   const postsForGrid = useMemo(() => (activeTab ? postsByTags[activeTab] : posts.slice(1)), [activeTab, postsByTags]);
 
   return (
-    <BlogLayout>
+    <HomeLayout>
       <div className="scoped-tailwind-preflight">
         <div className="container mx-auto px-8 py-24 sm:px-6 lg:px-8">
           <header className="mb-8 border-b border-black pb-8">
@@ -290,7 +290,7 @@ const IndexPage = () => {
           {postsForGrid ? <PostsGrid posts={postsForGrid} /> : null}
         </div>
       </div>
-    </BlogLayout>
+    </HomeLayout>
   );
 };
 
