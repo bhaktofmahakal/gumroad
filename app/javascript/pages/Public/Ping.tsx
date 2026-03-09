@@ -78,7 +78,6 @@ const PublicPing = () => (
           <PingNavigation />
           <article className="grid gap-8">
             <section id="ping-intro" className="flex flex-col gap-4">
-              <h2 className="text-xl font-bold">Gumroad Ping</h2>
               <p>Gumroad Ping is a simple alert that notifies you in real time whenever one of your products is purchased.</p>
 
               <div>
