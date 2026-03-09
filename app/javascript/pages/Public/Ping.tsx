@@ -56,7 +56,7 @@ const PING_PARAMETERS: PingParameter[] = [
 const PublicPing = () => (
   <Layout currentPage="ping">
     <main className="p-4 md:p-8">
-      <div className="mx-auto max-w-5xl">
+      <div>
         <article className="flex flex-col gap-8">
           <header>
             <h1 className="text-3xl font-bold">Gumroad Ping</h1>
