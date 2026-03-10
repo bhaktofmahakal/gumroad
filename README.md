@@ -196,7 +196,7 @@ bin/dev
 
 This starts the Rails server, the JavaScript build system, and a Sidekiq worker.
 
-You can now access the application at `https://gumroad.dev`.
+You can now access the application at `http://localhost:3000`.
 
 ## Development
 
