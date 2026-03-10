@@ -60,7 +60,7 @@ configuration_by_env = {
     short_domain: "localhost:3000",
     discover_domain: "localhost:3000",
     api_domain: "localhost:3000",
-    third_party_analytics_domain: "localhost:3000",
+    third_party_analytics_domain: "localhost",
     valid_request_hosts: ["localhost", "localhost:3000", "127.0.0.1"],
     valid_api_request_hosts: ["localhost:3000"],
     valid_discover_host: "localhost",
