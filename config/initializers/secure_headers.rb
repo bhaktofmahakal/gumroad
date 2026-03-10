@@ -204,7 +204,8 @@ SecureHeaders::Configuration.default do |config|
     config.csp[:script_src] << "'unsafe-inline'" # Allow react-on-rails to inject server-rendering logs into the browser
     config.csp[:connect_src] << "localhost:3035" # Required by webpack-dev-server
     config.csp[:connect_src] << "ws://localhost:3035" # Required by webpack-dev-server
-    config.csp[:connect_src] << "wss://#{ANYCABLE_HOST}:8081" # Required by AnyCable
+    config.csp[:connect_src] << "ws://#{ANYCABLE_HOST}:8080" # Required by AnyCable
+    config.csp[:connect_src] << "wss://#{ANYCABLE_HOST}:8080" # Required by AnyCable
     config.csp[:connect_src] << "helperai.dev" # Required by Helper widget
     config.csp[:connect_src] << "wss://supabase.helperai.dev" # Required by Helper widget
     config.csp[:connect_src] << "http:"
