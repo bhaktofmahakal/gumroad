@@ -34,7 +34,7 @@ Rails.application.routes.draw do
   end
 
   # third party analytics (near the top to matches constraint first)
-  constraints(host: /#{THIRD_PARTY_ANALYTICS_DOMAIN}/o) do
+  constraints(host: /#{VALID_THIRD_PARTY_ANALYTICS_REQUEST_HOST}/o) do
     get "/:link_id", to: "third_party_analytics#index", as: :third_party_analytics
     get "/(*path)", to: "application#e404_page"
   end

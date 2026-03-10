@@ -10,6 +10,7 @@ configuration_by_env = {
     discover_domain: "gumroad.com",
     api_domain: "api.gumroad.com",
     third_party_analytics_domain: "gumroad-analytics.com",
+    valid_third_party_analytics_host: "gumroad-analytics.com",
     valid_request_hosts: ["gumroad.com", "app.gumroad.com"],
     valid_api_request_hosts: ["api.gumroad.com"],
     valid_discover_host: "gumroad.com",
@@ -27,6 +28,7 @@ configuration_by_env = {
     discover_domain: "staging.gumroad.com",
     api_domain: "api.staging.gumroad.com",
     third_party_analytics_domain: "staging.gumroad-analytics.com",
+    valid_third_party_analytics_host: "staging.gumroad-analytics.com",
     valid_request_hosts: ["staging.gumroad.com", "app.staging.gumroad.com"],
     valid_api_request_hosts: ["api.staging.gumroad.com"],
     valid_discover_host: "staging.gumroad.com",
@@ -44,6 +46,7 @@ configuration_by_env = {
     discover_domain: "test.gumroad.com:31337",
     api_domain: "api.test.gumroad.com:31337",
     third_party_analytics_domain: "analytics.test.gumroad.com",
+    valid_third_party_analytics_host: "analytics.test.gumroad.com",
     valid_request_hosts: ["127.0.0.1", "app.test.gumroad.com", "test.gumroad.com"],
     valid_api_request_hosts: ["api.test.gumroad.com"],
     valid_discover_host: "test.gumroad.com",
@@ -60,7 +63,8 @@ configuration_by_env = {
     short_domain: "localhost:3000",
     discover_domain: "localhost:3000",
     api_domain: "localhost:3000",
-    third_party_analytics_domain: "localhost",
+    third_party_analytics_domain: "localhost:3000",
+    valid_third_party_analytics_host: "localhost",
     valid_request_hosts: ["localhost", "localhost:3000", "127.0.0.1"],
     valid_api_request_hosts: ["localhost:3000"],
     valid_discover_host: "localhost",
@@ -83,6 +87,7 @@ ROOT_DOMAIN         = custom_domain || config[:root_domain]
 SHORT_DOMAIN        = custom_short_domain || config[:short_domain]
 API_DOMAIN          = config[:api_domain]
 THIRD_PARTY_ANALYTICS_DOMAIN = config[:third_party_analytics_domain]
+VALID_THIRD_PARTY_ANALYTICS_REQUEST_HOST = config[:valid_third_party_analytics_host]
 VALID_REQUEST_HOSTS = config[:valid_request_hosts]
 VALID_API_REQUEST_HOSTS = config[:valid_api_request_hosts]
 VALID_CORS_ORIGINS = config[:valid_cors_origins]
