@@ -10,7 +10,10 @@ module Subdomain
 
     def find_seller_by_hostname(hostname)
       if subdomain_request?(hostname)
-        subdomain = ActionDispatch::Http::URL.extract_subdomains(hostname, 1)[0]
+        # localhost is a single-label host, so tld_length must be 0 for subdomain extraction to work.
+        # Multi-label hosts like gumroad.com or test.gumroad.com need tld_length 1.
+        tld_length = hostname.end_with?(".localhost") ? 0 : 1
+        subdomain = ActionDispatch::Http::URL.extract_subdomains(hostname, tld_length)[0]
 
         return User.alive.find_by(external_id: subdomain) if /^[0-9]+$/.match?(subdomain)
 
