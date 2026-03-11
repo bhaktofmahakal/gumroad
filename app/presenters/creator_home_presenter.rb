@@ -21,7 +21,7 @@ class CreatorHomePresenter
       stripe_verification_message: stripe_verification_message,
       tax_forms: tax_data[:tax_forms],
       show_1099_download_notice: tax_data[:show_1099_download_notice],
-      tax_center_enabled: Feature.active?(:tax_center, seller),
+      tax_center_enabled: tax_data[:tax_center_enabled],
       dashboard_data: InertiaRails.defer(group: "dashboard") { dashboard_data },
     }
   end
@@ -36,7 +36,8 @@ class CreatorHomePresenter
 
   private
     def has_sale?
-      seller.sales.not_is_bundle_product_purchase.successful_or_preorder_authorization_successful.exists?
+      return @has_sale unless @has_sale.nil?
+      @has_sale = seller.sales.not_is_bundle_product_purchase.successful_or_preorder_authorization_successful.exists?
     end
 
     def getting_started_stats
@@ -107,6 +108,7 @@ class CreatorHomePresenter
         tax_center_enabled = Feature.active?(:tax_center, seller)
         if tax_center_enabled
           {
+            tax_center_enabled: true,
             tax_forms: [],
             show_1099_download_notice: seller.user_tax_forms.for_year(Time.current.prev_year.year).exists?,
           }
@@ -116,6 +118,7 @@ class CreatorHomePresenter
             hash[year] = url if url.present?
           end
           {
+            tax_center_enabled: false,
             tax_forms:,
             show_1099_download_notice: tax_forms[Time.current.prev_year.year].present?,
           }
