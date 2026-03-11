@@ -699,7 +699,7 @@ describe Payouts do
     let(:merchant_account) { create(:merchant_account_stripe, user:) }
     let(:balance) do
       create(:balance, user:, date: Date.yesterday, merchant_account:,
-             amount_cents: 10_00, holding_currency: Currency::USD, holding_amount_cents: 10_00)
+                       amount_cents: 10_00, holding_currency: Currency::USD, holding_amount_cents: 10_00)
     end
 
     before do

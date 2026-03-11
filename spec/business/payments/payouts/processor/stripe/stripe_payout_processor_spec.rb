@@ -778,8 +778,8 @@ describe StripePayoutProcessor, :vcr do
 
       it "fails the payment and adds a payout note" do
         negative_balance = Stripe::StripeObject.construct_from({
-          available: [{ "amount" => -5000, "currency" => payment.currency }]
-        })
+                                                                 available: [{ "amount" => -5000, "currency" => payment.currency }]
+                                                               })
         allow(Stripe::Balance).to receive(:retrieve)
           .with({}, { stripe_account: payment.stripe_connect_account_id })
           .and_return(negative_balance)
