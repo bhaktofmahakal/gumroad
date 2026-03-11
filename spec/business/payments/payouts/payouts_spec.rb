@@ -696,7 +696,7 @@ describe Payouts do
   describe ".create_payment" do
     let(:user) { create(:user, unpaid_balance_cents: 10_00) }
     let(:bank_account) { create(:ach_account_stripe_succeed, user:) }
-    let(:merchant_account) { create(:merchant_account_stripe, user:) }
+    let(:merchant_account) { create(:merchant_account, user:) }
     let(:balance) do
       create(:balance, user:, date: Date.yesterday, merchant_account:,
                        amount_cents: 10_00, holding_currency: Currency::USD, holding_amount_cents: 10_00)
@@ -712,7 +712,7 @@ describe Payouts do
 
     context "when prepare_payment_and_set_amount returns errors" do
       before do
-        allow(StripePayoutProcessor).to receive(:prepare_payment_and_set_amount).and_wrap_original do |method, payment, balances|
+        allow(StripePayoutProcessor).to receive(:prepare_payment_and_set_amount) do |payment, _balances|
           payment.failure_reason = Payment::FailureReason::NEGATIVE_STRIPE_BALANCE
           payment.mark_failed!(Payment::FailureReason::NEGATIVE_STRIPE_BALANCE)
           ["Stripe account has a negative balance"]
@@ -728,6 +728,15 @@ describe Payouts do
     end
 
     context "when prepare_payment_and_set_amount succeeds" do
+      before do
+        allow(StripePayoutProcessor).to receive(:prepare_payment_and_set_amount) do |payment, _balances|
+          payment.stripe_connect_account_id = merchant_account.charge_processor_merchant_id
+          payment.currency = Currency::USD
+          payment.amount_cents = 10_00
+          []
+        end
+      end
+
       it "transitions the payment to processing" do
         payment, errors = described_class.create_payment(Date.yesterday, PayoutProcessorType::STRIPE, user)
 

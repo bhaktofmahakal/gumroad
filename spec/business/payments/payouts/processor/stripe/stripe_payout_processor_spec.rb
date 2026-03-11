@@ -6,10 +6,6 @@ describe StripePayoutProcessor, :vcr do
   include CurrencyHelper
   include StripeChargesHelper
 
-  before do
-    allow(described_class).to receive(:stripe_balance_negative?).and_return(false)
-  end
-
   describe "is_user_payable" do
     before do
       # sufficient balance for US USD payout
