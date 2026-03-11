@@ -11390,6 +11390,12 @@ describe StripeMerchantAccountManager, :vcr do
         expect(bank_account.stripe_fingerprint).to eq("new_fp")
       end
 
+      it "enqueues CheckPaymentAddressWorker" do
+        expect(CheckPaymentAddressWorker).to receive(:perform_async).with(user.id)
+
+        described_class.handle_external_account_event(stripe_event, stripe_connect_account_id:)
+      end
+
       it "logs the sync" do
         expect(Rails.logger).to receive(:info).with(/Syncing external account.*ba_old_id -> ba_new_id/)
 

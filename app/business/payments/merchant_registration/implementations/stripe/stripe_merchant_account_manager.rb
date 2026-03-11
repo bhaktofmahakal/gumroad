@@ -623,6 +623,8 @@ module StripeMerchantAccountManager
     bank_account.stripe_external_account_id = new_external_account_id
     bank_account.stripe_fingerprint = fingerprint if fingerprint.present?
     bank_account.save!
+
+    CheckPaymentAddressWorker.perform_async(bank_account.user_id)
   end
 
   def self.handle_stripe_event_account_deauthorized(stripe_event)
