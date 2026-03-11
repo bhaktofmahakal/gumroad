@@ -143,13 +143,8 @@ class StripePayoutProcessor
     # transfer-fail-reverse cycle that repeats every payout period.
     if stripe_balance_negative?(payment.stripe_connect_account_id, payment.currency)
       failed = true
-      payout_date = Time.current.to_fs(:formatted_date_full_month)
-      payment.user.add_payout_note(
-        content: "Payout on #{payout_date} was skipped because the Stripe account has a negative balance. " \
-                 "This usually means a previous payout was returned and Stripe is recovering the funds."
-      )
       payment.failure_reason = Payment::FailureReason::NEGATIVE_STRIPE_BALANCE
-      return ["Stripe account has a negative balance for #{payment.currency}"]
+      return negative_balance_payout_errors(payment)
     end
 
     payment.amount_cents += balances_held_by_stripe.sum(&:holding_amount_cents)
@@ -224,6 +219,15 @@ class StripePayoutProcessor
   # Public: Actually sends the money.
   # Returns an array of errors.
   def self.perform_payment(payment)
+    # Re-check the Stripe balance right before issuing the payout.
+    # The balance may have gone negative since create_payment (up to ~25 hours earlier
+    # for cross-border payouts processed via ProcessPaymentWorker).
+    if stripe_balance_negative?(payment.stripe_connect_account_id, payment.currency)
+      failed = true
+      failure_reason = Payment::FailureReason::NEGATIVE_STRIPE_BALANCE
+      return negative_balance_payout_errors(payment)
+    end
+
     # We have transferred the balance held by gumroad to the connected Stripe standard account.
     # No payout needs to be issued in this case.
     merchant_account = payment.user.merchant_accounts.find_by(charge_processor_merchant_id: payment.stripe_connect_account_id)
@@ -487,6 +491,17 @@ class StripePayoutProcessor
       returned_payment: payment,
       difference_amount_cents:
     )
+  end
+
+  # Adds a payout note explaining the negative balance skip and returns
+  # the error array callers should propagate.
+  def self.negative_balance_payout_errors(payment)
+    payout_date = Time.current.to_fs(:formatted_date_full_month)
+    payment.user.add_payout_note(
+      content: "Payout on #{payout_date} was skipped because the Stripe account has a negative balance. " \
+               "This usually means a previous payout was returned and Stripe is recovering the funds."
+    )
+    ["Stripe account has a negative balance for #{payment.currency}"]
   end
 
   # Returns true if the Stripe connected account's available balance

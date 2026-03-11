@@ -769,6 +769,30 @@ describe StripePayoutProcessor, :vcr do
         expect(errors.first).to match(/You have insufficient funds in your Stripe account for this transfer/)
       end
     end
+
+    describe "Stripe balance becomes negative between payment creation and perform_payment" do
+      before do
+        allow(described_class).to receive(:stripe_balance_negative?).and_call_original
+        described_class.prepare_payment_and_set_amount(payment, payment.balances.to_a)
+      end
+
+      it "fails the payment and adds a payout note" do
+        negative_balance = Stripe::StripeObject.construct_from({
+          available: [{ "amount" => -5000, "currency" => payment.currency }]
+        })
+        allow(Stripe::Balance).to receive(:retrieve)
+          .with({}, { stripe_account: payment.stripe_connect_account_id })
+          .and_return(negative_balance)
+
+        errors = described_class.perform_payment(payment)
+
+        expect(errors).to include(/negative balance/)
+        payment.reload
+        expect(payment.state).to eq("failed")
+        expect(payment.failure_reason).to eq(Payment::FailureReason::NEGATIVE_STRIPE_BALANCE)
+        expect(payment.user.comments.with_type_payout_note.last.content).to include("negative balance")
+      end
+    end
   end
 
   describe "perform_payment for a US account with instant payout method type" do

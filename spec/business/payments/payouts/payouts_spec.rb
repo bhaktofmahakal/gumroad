@@ -692,4 +692,48 @@ describe Payouts do
       end
     end
   end
+
+  describe ".create_payment" do
+    let(:user) { create(:user, unpaid_balance_cents: 10_00) }
+    let(:bank_account) { create(:ach_account_stripe_succeed, user:) }
+    let(:merchant_account) { create(:merchant_account_stripe, user:) }
+    let(:balance) do
+      create(:balance, user:, date: Date.yesterday, merchant_account:,
+             amount_cents: 10_00, holding_currency: Currency::USD, holding_amount_cents: 10_00)
+    end
+
+    before do
+      bank_account
+      merchant_account
+      bank_account.reload
+      user.reload
+      balance
+    end
+
+    context "when prepare_payment_and_set_amount returns errors" do
+      before do
+        allow(StripePayoutProcessor).to receive(:prepare_payment_and_set_amount).and_wrap_original do |method, payment, balances|
+          payment.failure_reason = Payment::FailureReason::NEGATIVE_STRIPE_BALANCE
+          payment.mark_failed!(Payment::FailureReason::NEGATIVE_STRIPE_BALANCE)
+          ["Stripe account has a negative balance"]
+        end
+      end
+
+      it "returns early without calling mark_processing!" do
+        payment, errors = described_class.create_payment(Date.yesterday, PayoutProcessorType::STRIPE, user)
+
+        expect(errors).to include("Stripe account has a negative balance")
+        expect(payment.state).to eq("failed")
+      end
+    end
+
+    context "when prepare_payment_and_set_amount succeeds" do
+      it "transitions the payment to processing" do
+        payment, errors = described_class.create_payment(Date.yesterday, PayoutProcessorType::STRIPE, user)
+
+        expect(errors).to be_empty
+        expect(payment.state).to eq("processing")
+      end
+    end
+  end
 end

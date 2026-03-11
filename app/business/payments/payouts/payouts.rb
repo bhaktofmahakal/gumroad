@@ -183,6 +183,12 @@ class Payouts
     )
     payment.save!
     payment_errors = payout_processor.prepare_payment_and_set_amount(payment, balances)
+
+    # If prepare_payment_and_set_amount encountered errors (e.g. negative Stripe
+    # balance, Stripe API failure), the payment is already marked failed.
+    # Return early to avoid an invalid state transition to processing.
+    return [payment, payment_errors] if payment_errors.present?
+
     payment.mark_processing!
     [payment, payment_errors]
   end
