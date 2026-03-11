@@ -6,8 +6,8 @@ import * as React from "react";
 import { formatPriceCentsWithCurrencySymbol } from "$app/utils/currency";
 
 import { ActivityFeed, ActivityItem } from "$app/components/ActivityFeed";
-import { DashboardContentLoading } from "$app/components/DashboardPage/ContentLoading";
 import { Button, NavigationButton } from "$app/components/Button";
+import { DashboardContentLoading } from "$app/components/DashboardPage/ContentLoading";
 import { useAppDomain } from "$app/components/DomainSettings";
 import { CustomizeProfileIcon } from "$app/components/icons/getting-started/CustomizeProfileIcon";
 import { EmailBlastIcon } from "$app/components/icons/getting-started/EmailBlastIcon";

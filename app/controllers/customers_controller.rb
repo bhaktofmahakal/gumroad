@@ -17,7 +17,7 @@ class CustomersController < Sellers::BaseController
 
     render inertia: "Customers/Index",
            props: {
-             customers_presenter: InertiaRails.defer {
+             customers_presenter: InertiaRails.defer do
                sales = fetch_sales(products: [product].compact)
                CustomersPresenter.new(
                  pundit_user:,
@@ -26,7 +26,7 @@ class CustomersController < Sellers::BaseController
                  pagination: { page: 1, pages: (sales.results.total / CUSTOMERS_PER_PAGE.to_f).ceil, next: nil },
                  count: sales.results.total
                ).customers_props
-             },
+             end,
            }
   end
 

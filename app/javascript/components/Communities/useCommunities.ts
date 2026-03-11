@@ -26,11 +26,7 @@ const sortByName = <T extends { name: string }>(items: readonly T[]) =>
 
 export const useCommunities = () => {
   const pageProps = cast<PageProps>(usePage().props);
-  const {
-    has_products,
-    communities_data,
-    selectedCommunityId: initialSelectedCommunityId,
-  } = pageProps;
+  const { has_products, communities_data, selectedCommunityId: initialSelectedCommunityId } = pageProps;
 
   const initialCommunities = communities_data?.communities ?? [];
   const notification_settings = communities_data?.notification_settings ?? {};
