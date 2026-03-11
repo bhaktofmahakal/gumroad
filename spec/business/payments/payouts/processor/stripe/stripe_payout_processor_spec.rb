@@ -321,8 +321,8 @@ describe StripePayoutProcessor, :vcr do
 
     it "skips the payout, marks it failed, and adds a payout note" do
       negative_balance = Stripe::StripeObject.construct_from({
-        available: [{ "amount" => -2953, "currency" => "cad" }]
-      })
+                                                               available: [{ "amount" => -2953, "currency" => "cad" }]
+                                                             })
       allow(Stripe::Balance).to receive(:retrieve)
         .with({}, { stripe_account: merchant_account.charge_processor_merchant_id })
         .and_return(negative_balance)
@@ -337,8 +337,8 @@ describe StripePayoutProcessor, :vcr do
 
     it "proceeds normally when the balance is positive" do
       positive_balance = Stripe::StripeObject.construct_from({
-        available: [{ "amount" => 5000, "currency" => "cad" }]
-      })
+                                                               available: [{ "amount" => 5000, "currency" => "cad" }]
+                                                             })
       allow(Stripe::Balance).to receive(:retrieve)
         .with({}, { stripe_account: merchant_account.charge_processor_merchant_id })
         .and_return(positive_balance)
@@ -3505,8 +3505,8 @@ describe StripePayoutProcessor, :vcr do
 
     it "returns true when the available balance is negative for the given currency" do
       balance = Stripe::StripeObject.construct_from({
-        available: [{ "amount" => -2953, "currency" => "usd" }]
-      })
+                                                      available: [{ "amount" => -2953, "currency" => "usd" }]
+                                                    })
       allow(Stripe::Balance).to receive(:retrieve)
         .with({}, { stripe_account: stripe_account_id })
         .and_return(balance)
@@ -3516,8 +3516,8 @@ describe StripePayoutProcessor, :vcr do
 
     it "returns false when the available balance is positive" do
       balance = Stripe::StripeObject.construct_from({
-        available: [{ "amount" => 5000, "currency" => "usd" }]
-      })
+                                                      available: [{ "amount" => 5000, "currency" => "usd" }]
+                                                    })
       allow(Stripe::Balance).to receive(:retrieve)
         .with({}, { stripe_account: stripe_account_id })
         .and_return(balance)
@@ -3527,8 +3527,8 @@ describe StripePayoutProcessor, :vcr do
 
     it "returns false when no balance entry exists for the currency" do
       balance = Stripe::StripeObject.construct_from({
-        available: [{ "amount" => -100, "currency" => "eur" }]
-      })
+                                                      available: [{ "amount" => -100, "currency" => "eur" }]
+                                                    })
       allow(Stripe::Balance).to receive(:retrieve)
         .with({}, { stripe_account: stripe_account_id })
         .and_return(balance)
@@ -3538,8 +3538,8 @@ describe StripePayoutProcessor, :vcr do
 
     it "returns false when the balance is zero" do
       balance = Stripe::StripeObject.construct_from({
-        available: [{ "amount" => 0, "currency" => "usd" }]
-      })
+                                                      available: [{ "amount" => 0, "currency" => "usd" }]
+                                                    })
       allow(Stripe::Balance).to receive(:retrieve)
         .with({}, { stripe_account: stripe_account_id })
         .and_return(balance)
