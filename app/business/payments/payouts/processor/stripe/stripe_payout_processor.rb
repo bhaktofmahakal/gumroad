@@ -225,6 +225,8 @@ class StripePayoutProcessor
     end
 
     if stripe_balance_negative?(payment.stripe_connect_account_id, payment.currency)
+      failed = true
+      failure_reason = Payment::FailureReason::NEGATIVE_STRIPE_BALANCE
       return negative_balance_payout_errors(payment)
     end
 

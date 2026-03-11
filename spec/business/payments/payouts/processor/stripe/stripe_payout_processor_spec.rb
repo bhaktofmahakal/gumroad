@@ -302,7 +302,7 @@ describe StripePayoutProcessor, :vcr do
   describe "prepare_payment_and_set_amount when Stripe balance is negative" do
     let(:user) { create(:user) }
     let(:bank_account) { create(:ach_account_stripe_succeed, user:) }
-    let(:merchant_account) { create(:merchant_account_stripe_canada, user:) }
+    let(:merchant_account) { create(:merchant_account, user:, currency: "cad", country: "CA") }
 
     before do
       allow(described_class).to receive(:stripe_balance_negative?).and_call_original
@@ -313,7 +313,7 @@ describe StripePayoutProcessor, :vcr do
       user.reload
     end
 
-    let(:balance_1) { create(:balance, user:, date: Date.today - 1, currency: Currency::USD, amount_cents: 10_00, holding_currency: Currency::USD, holding_amount_cents: 10_00) }
+    let(:balance_1) { create(:balance, user:, date: Date.today - 1, merchant_account:, currency: Currency::USD, amount_cents: 10_00, holding_currency: Currency::USD, holding_amount_cents: 10_00) }
     let(:payment) do
       payment = create(:payment, user:, currency: nil, amount_cents: nil)
       payment.balances << balance_1
@@ -766,28 +766,41 @@ describe StripePayoutProcessor, :vcr do
       end
     end
 
-    describe "Stripe balance becomes negative between payment creation and perform_payment" do
-      before do
-        allow(described_class).to receive(:stripe_balance_negative?).and_call_original
-        described_class.prepare_payment_and_set_amount(payment, payment.balances.to_a)
-      end
+  end
 
-      it "fails the payment and adds a payout note" do
-        negative_balance = Stripe::StripeObject.construct_from({
-                                                                 available: [{ "amount" => -5000, "currency" => payment.currency }]
-                                                               })
-        allow(Stripe::Balance).to receive(:retrieve)
-          .with({}, { stripe_account: payment.stripe_connect_account_id })
-          .and_return(negative_balance)
+  describe "perform_payment when Stripe balance becomes negative after payment creation" do
+    let(:user) { create(:user) }
+    let(:bank_account) { create(:ach_account_stripe_succeed, user:) }
+    let(:merchant_account) { create(:merchant_account, user:, currency: "usd") }
+    let(:payment) do
+      create(:payment, user:, bank_account: bank_account.reload, state: "processing",
+             processor: PayoutProcessorType::STRIPE, amount_cents: 10_00,
+             payout_period_end_date: Date.yesterday, stripe_connect_account_id: merchant_account.charge_processor_merchant_id,
+             currency: merchant_account.currency)
+    end
 
-        errors = described_class.perform_payment(payment)
+    before do
+      allow(described_class).to receive(:stripe_balance_negative?).and_call_original
+      merchant_account
+      bank_account.reload
+      user.reload
+    end
 
-        expect(errors).to include(/negative balance/)
-        payment.reload
-        expect(payment.state).to eq("failed")
-        expect(payment.failure_reason).to eq(Payment::FailureReason::NEGATIVE_STRIPE_BALANCE)
-        expect(payment.user.comments.with_type_payout_note.last.content).to include("negative balance")
-      end
+    it "fails the payment, reverses the internal transfer, and adds a payout note" do
+      negative_balance = Stripe::StripeObject.construct_from({
+                                                               available: [{ "amount" => -5000, "currency" => "usd" }]
+                                                             })
+      allow(Stripe::Balance).to receive(:retrieve)
+        .with({}, { stripe_account: payment.stripe_connect_account_id })
+        .and_return(negative_balance)
+
+      errors = described_class.perform_payment(payment)
+
+      expect(errors).to include(/negative balance/)
+      payment.reload
+      expect(payment.state).to eq("failed")
+      expect(payment.failure_reason).to eq(Payment::FailureReason::NEGATIVE_STRIPE_BALANCE)
+      expect(payment.user.comments.with_type_payout_note.last.content).to include("negative balance")
     end
   end
 

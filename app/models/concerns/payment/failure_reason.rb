@@ -135,7 +135,6 @@ module Payment::FailureReason
       reason: "the bank no longer supports payouts to this card",
       solution: "Change the card used for payouts",
     },
-
   }
   private_constant :STRIPE_FAILURE_SOLUTIONS
 
