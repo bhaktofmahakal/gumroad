@@ -513,6 +513,7 @@ describe("Posts on seller profile", type: :system, js: true) do
         end
 
         # Verify current user's avatar when signed in as the comment author
+        logout
         login_as commenter
         visit "#{seller.subdomain_with_protocol}/p/#{post.slug}"
         within_section "Write a comment", section_element: :section do
@@ -520,6 +521,7 @@ describe("Posts on seller profile", type: :system, js: true) do
         end
 
         # Verify avatars of comment authors
+        logout
         create(:comment, commentable: post)
         visit "#{seller.subdomain_with_protocol}/p/#{post.slug}"
         within_section "2 comments" do
