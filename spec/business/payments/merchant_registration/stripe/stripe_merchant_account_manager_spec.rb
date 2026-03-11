@@ -11362,9 +11362,9 @@ describe StripeMerchantAccountManager, :vcr do
     let(:stripe_connect_account_id) { "acct_ext_test" }
     let!(:bank_account) do
       create(:ach_account, user:,
-             stripe_connect_account_id:,
-             stripe_bank_account_id: "ba_old_id",
-             stripe_fingerprint: "old_fp")
+                           stripe_connect_account_id:,
+                           stripe_bank_account_id: "ba_old_id",
+                           stripe_fingerprint: "old_fp")
     end
 
     context "when account.external_account.created event is received" do
