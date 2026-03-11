@@ -319,15 +319,15 @@ describe StripeEventHandler do
     describe "an external account event" do
       before do
         @stripe_event = {
-          id: "evt_ext_acct",
-          type: "account.external_account.created",
-          user_id: "acct_connected",
-          account: "acct_connected",
-          data: {
-            object: {
-              id: "ba_new_123",
-              object: "bank_account",
-              fingerprint: "fp_new"
+          "id" => "evt_ext_acct",
+          "type" => "account.external_account.created",
+          "user_id" => "acct_connected",
+          "account" => "acct_connected",
+          "data" => {
+            "object" => {
+              "id" => "ba_new_123",
+              "object" => "bank_account",
+              "fingerprint" => "fp_new"
             }
           }
         }
