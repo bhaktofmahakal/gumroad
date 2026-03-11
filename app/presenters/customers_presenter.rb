@@ -19,6 +19,8 @@ class CustomersPresenter
     )
   end
 
+  private
+
   def static_props
     {
       product_id: product&.external_id,

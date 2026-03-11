@@ -20,6 +20,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "$app/components/Popover
 import { AuthorByline } from "$app/components/Product/AuthorByline";
 import { Thumbnail } from "$app/components/Product/Thumbnail";
 import { Select } from "$app/components/Select";
+import { Skeleton } from "$app/components/Skeleton";
 import { showAlert } from "$app/components/server-components/Alert";
 import { Alert } from "$app/components/ui/Alert";
 import { CardContent, Card as UICard } from "$app/components/ui/Card";
@@ -614,7 +615,7 @@ const LibraryContentLoading = () => {
       <section className="space-y-4 p-4 md:p-8">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }, (_, i) => (
-            <div key={i} className="h-64 animate-pulse rounded-lg bg-black/5 dark:bg-white/5" />
+            <Skeleton key={i} className="h-64" />
           ))}
         </div>
       </section>
@@ -624,9 +625,7 @@ const LibraryContentLoading = () => {
 
 function LibraryDeferredContent() {
   const { library_data } = cast<PageProps>(usePage().props);
-  if (!library_data) return null;
-
-  return <LibraryContent {...library_data} />;
+  return <LibraryContent {...library_data!} />;
 }
 
 export default function LibraryPage() {
