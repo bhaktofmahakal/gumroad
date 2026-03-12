@@ -765,7 +765,6 @@ describe StripePayoutProcessor, :vcr do
         expect(errors.first).to match(/You have insufficient funds in your Stripe account for this transfer/)
       end
     end
-
   end
 
   describe "perform_payment when Stripe balance becomes negative after payment creation" do
@@ -774,9 +773,9 @@ describe StripePayoutProcessor, :vcr do
     let(:merchant_account) { create(:merchant_account, user:, currency: "usd") }
     let(:payment) do
       create(:payment, user:, bank_account: bank_account.reload, state: "processing",
-             processor: PayoutProcessorType::STRIPE, amount_cents: 10_00,
-             payout_period_end_date: Date.yesterday, stripe_connect_account_id: merchant_account.charge_processor_merchant_id,
-             currency: merchant_account.currency)
+                       processor: PayoutProcessorType::STRIPE, amount_cents: 10_00,
+                       payout_period_end_date: Date.yesterday, stripe_connect_account_id: merchant_account.charge_processor_merchant_id,
+                       currency: merchant_account.currency)
     end
 
     before do
