@@ -11,6 +11,10 @@ describe StampPdfForPurchaseJob do
     allow(PdfStampingService).to receive(:stamp_for_purchase!)
   end
 
+  it "has unique_across_queues enabled to prevent duplicate jobs on different queues" do
+    expect(described_class.sidekiq_options["unique_across_queues"]).to eq(true)
+  end
+
   it "performs the job" do
     described_class.new.perform(purchase.id)
     expect(PdfStampingService).to have_received(:stamp_for_purchase!).with(purchase)

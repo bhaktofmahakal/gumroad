@@ -66,6 +66,36 @@ describe PdfStampingService::StampForPurchase do
       end
     end
 
+    context "when a stamped PDF was soft-deleted (expired)" do
+      let!(:product_file) { create(:readable_document, pdf_stamp_enabled: true) }
+
+      before do
+        product.product_files << product_file
+      end
+
+      it "regenerates the stamped PDF by undeleting and updating the URL" do
+        url_redirect = purchase.url_redirect
+
+        # First stamp succeeds
+        expect(described_class.perform!(purchase)).to be(true)
+        stamped_pdf = url_redirect.stamped_pdfs.first
+        old_url = stamped_pdf.url
+        expect(stamped_pdf).to be_alive
+
+        # Simulate expiration (soft-delete)
+        stamped_pdf.mark_deleted!
+        url_redirect.update!(is_done_pdf_stamping: false)
+        expect(stamped_pdf.reload).to be_deleted
+
+        # Re-stamp should undelete and update the URL
+        expect(described_class.perform!(purchase)).to be(true)
+        stamped_pdf.reload
+        expect(stamped_pdf).to be_alive
+        expect(stamped_pdf.url).to match(/#{AWS_S3_ENDPOINT}/o)
+        expect(url_redirect.reload.is_done_pdf_stamping?).to eq(true)
+      end
+    end
+
     context "when the product doesn't have stampable PDFs" do
       it "does nothing" do
         expect(described_class.perform!(purchase)).to eq(nil)

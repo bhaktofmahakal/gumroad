@@ -3,7 +3,7 @@
 # Stamps PDF(s) for a purchase. Errors propagate so Sidekiq retries on failure.
 class StampPdfForPurchaseJob
   include Sidekiq::Job
-  sidekiq_options queue: :long, retry: 5, lock: :until_executed
+  sidekiq_options queue: :long, retry: 5, lock: :until_executed, unique_across_queues: true
 
   def perform(purchase_id)
     purchase = Purchase.find(purchase_id)

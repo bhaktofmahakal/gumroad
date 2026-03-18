@@ -48,9 +48,10 @@ module PdfStampingService::StampForPurchase
     def process_product_file(url_redirect:, product_file:, watermark_text:)
       stamped_pdf_url = stamp_and_upload!(product_file:, watermark_text:)
       return OpenStruct.new(success?: true) if stamped_pdf_url.nil?
-      url_redirect.stamped_pdfs.find_or_create_by!(product_file:) do |stamped_pdf|
-        stamped_pdf.url = stamped_pdf_url
-      end
+      stamped_pdf = url_redirect.stamped_pdfs.find_or_initialize_by(product_file:)
+      stamped_pdf.url = stamped_pdf_url
+      stamped_pdf.deleted_at = nil
+      stamped_pdf.save!
       OpenStruct.new(success?: true)
     rescue *PdfStampingService::ERRORS_TO_RESCUE => error
       OpenStruct.new(
