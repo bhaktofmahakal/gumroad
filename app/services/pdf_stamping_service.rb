@@ -21,4 +21,8 @@ module PdfStampingService
   def cache_key_for_purchase(purchase_id)
     "stamp_pdf_for_purchase_job_#{purchase_id}"
   end
+
+  def notify_buyer_cache_key(purchase_id)
+    "stamp_pdf_notify_buyer_#{purchase_id}"
+  end
 end

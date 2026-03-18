@@ -954,7 +954,7 @@ describe UrlRedirectsController, inertia: true do
     end
 
     context "when a PDF must be stamped and stamped file is missing" do
-      it "shows alert, enqueues job (critical, notify=true), and redirects to download page" do
+      it "shows alert, sets notify cache flag, enqueues job on critical, and redirects to download page" do
         product_file = create(:readable_document, link: @product, pdf_stamp_enabled: true)
         url_redirect = UrlRedirect.find_by(token: @token)
 
@@ -964,7 +964,8 @@ describe UrlRedirectsController, inertia: true do
 
         expect(response).to redirect_to(url_redirect.download_page_url)
         expect(flash[:warning]).to eq("We are preparing the file for download. You will receive an email when it is ready.")
-        expect(StampPdfForPurchaseJob).to have_enqueued_sidekiq_job(url_redirect.purchase_id, true).on("critical")
+        expect(Rails.cache.read(PdfStampingService.notify_buyer_cache_key(url_redirect.purchase_id))).to eq(true)
+        expect(StampPdfForPurchaseJob).to have_enqueued_sidekiq_job(url_redirect.purchase_id).on("critical")
       end
     end
   end

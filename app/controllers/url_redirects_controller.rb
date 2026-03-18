@@ -101,12 +101,15 @@ class UrlRedirectsController < ApplicationController
       # Non-JSON requests to this controller route pass an array with a single product file ID for `product_file_ids`
       @product_file = product_files.first
 
-      if @product_file.must_be_pdf_stamped? && @url_redirect.missing_stamped_pdf?(@product_file)
+      if @product_file.must_be_pdf_stamped? && !@product_file.cannot_be_stamped? && @url_redirect.missing_stamped_pdf?(@product_file)
         flash[:warning] = "We are preparing the file for download. You will receive an email when it is ready."
 
-        # Do not enqueue the job more than once in 2 hours
+        # Signal that the buyer should be notified when stamping completes
+        Rails.cache.write(PdfStampingService.notify_buyer_cache_key(@url_redirect.purchase_id), true, expires_in: 4.hours)
+
+        # Do not enqueue the job more than once in 4 hours
         Rails.cache.fetch(PdfStampingService.cache_key_for_purchase(@url_redirect.purchase_id), expires_in: 4.hours) do
-          StampPdfForPurchaseJob.set(queue: :critical).perform_async(@url_redirect.purchase_id, true) # Stamp and notify the buyer
+          StampPdfForPurchaseJob.set(queue: :critical).perform_async(@url_redirect.purchase_id)
         end
 
         return redirect_to(@url_redirect.download_page_url)

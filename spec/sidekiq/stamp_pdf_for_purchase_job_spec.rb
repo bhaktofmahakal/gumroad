@@ -16,11 +16,23 @@ describe StampPdfForPurchaseJob do
     expect(PdfStampingService).to have_received(:stamp_for_purchase!).with(purchase)
   end
 
-  it "enqueues files ready email when notify flag is true" do
+  it "sends files ready email when notify buyer cache flag is set" do
+    purchase.create_url_redirect!
+    Rails.cache.write(PdfStampingService.notify_buyer_cache_key(purchase.id), true)
+
     expect do
-      purchase.create_url_redirect!
-      described_class.new.perform(purchase.id, true)
+      described_class.new.perform(purchase.id)
     end.to have_enqueued_mail(CustomerMailer, :files_ready_for_download).with(purchase.id)
+
+    expect(Rails.cache.read(PdfStampingService.notify_buyer_cache_key(purchase.id))).to be_nil
+  end
+
+  it "does not send files ready email when notify buyer cache flag is not set" do
+    purchase.create_url_redirect!
+
+    expect do
+      described_class.new.perform(purchase.id)
+    end.not_to have_enqueued_mail(CustomerMailer, :files_ready_for_download)
   end
 
   context "when stamping the PDFs fails with a known error" do
