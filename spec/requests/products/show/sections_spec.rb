@@ -68,6 +68,7 @@ describe "Profile settings on product pages", type: :system, js: true do
       click_on "Products"
       check product2.name
     end
+    page.scroll_to(find(:disclosure_button, "Edit section"), align: :center)
     toggle_disclosure "Edit section"
     click_on "Move section down"
 
