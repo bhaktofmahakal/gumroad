@@ -140,6 +140,20 @@ Reduce the number of flaky test failures in the Gumroad CI pipeline. Tests run o
 | 23302704031 | 2 | 2 | payments_spec Stripe cascade + taxes_spec WI physical product |
 | 23305212973 | 1 | 1 | payments_spec Stripe rate limit (Liechtenstein, infrastructure) |
 | 23306870879 | 1 | 3 | Node-level VCR failure: 3 tax tests on Slow 32 got 0 tax (sporadic) |
+| 23308786968 | 0 | 0 | Fourteenth clean run! Stability confirmed |
+| 23309834793 | 1 | 1 | taxes_spec:3806 Canada physical product — send_keys(:tab) blur unreliable |
+
+### Experiment 19: Replace send_keys(:tab) with JS blur in Canada tax + shipping specs
+- **Target**: `taxes_spec.rb:3806,:3785` Canada Tax province blur + shipping specs ZIP code blur
+  - Root cause: `find_field("Province").send_keys(:tab)` unreliable in headless Chrome for triggering blur → tax calc doesn't fire
+  - **Fix**: Replace `send_keys(:tab)` with `page.execute_script("document.activeElement.blur()")` in:
+    - `taxes_spec.rb:3785` (QC province select)
+    - `taxes_spec.rb:3821` (BC province select in physical product test)
+    - `shipping_physical_subscription_spec.rb:47` (ZIP code blur)
+    - `shipping_spec.rb:30,53` (ZIP code blur)
+    - `shipping_offer_codes_spec.rb:75` (ZIP code blur)
+- **CI Run**: pending
+- **Status**: IN PROGRESS
 
 ### Experiment 8: Shipping preorder tax wait (663164330)
 - **Target**: `spec/requests/purchases/product/shipping/shipping_physical_preorder_spec.rb:74` — "Sales tax US$1.07" not found before checkout

@@ -3782,7 +3782,7 @@ describe("Product Page - Tax Scenarios", type: :system, js: true) do
       expect(page).to have_text("Total US$113", normalize_ws: true)
 
       select "QC", from: "Province"
-      find_field("Province").send_keys(:tab)
+      page.execute_script("document.activeElement.blur()")
       wait_for_ajax
       expect(page).to have_text("Total US$114.98", normalize_ws: true)
 
@@ -3813,14 +3813,14 @@ describe("Product Page - Tax Scenarios", type: :system, js: true) do
         expect(page).to have_select("Country", selected: "Canada")
         expect(page).to have_select("Province", selected: "ON")
         wait_for_ajax
+        expect(page).to have_text("Total US$113", normalize_ws: true)
 
-        check_out(product, address: { street: "568 Beatty St", city: "Vancouver", state: "BC", zip_code: "V6B 2L3" }, should_verify_address: true) do
-          select "ON", from: "Province"
-          select "BC", from: "Province"
-          fill_in "Postal", with: "V6B 2L3"
-          find_field("Postal").send_keys(:tab)
-          wait_for_ajax
-        end
+        select "BC", from: "Province"
+        find_field("Province").send_keys(:tab)
+        wait_for_ajax
+        expect(page).to have_text("Total US$112", normalize_ws: true)
+
+        check_out(product, address: { street: "568 Beatty St", city: "Vancouver", state: "BC", zip_code: "V6B 2L3" }, should_verify_address: true)
 
         purchase = Purchase.last
         expect(purchase.total_transaction_cents).to eq(112_00)
