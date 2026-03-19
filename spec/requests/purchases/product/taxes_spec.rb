@@ -3698,7 +3698,7 @@ describe("Product Page - Tax Scenarios", type: :system, js: true) do
       expect(page).to have_select("Country", selected: "Canada")
       expect(page).to have_select("Province", selected: "BC")
 
-      check_out(product, country: "Canada", zip_code: nil, credit_card: { number: "4000001240000000" })
+      check_out(product, zip_code: nil, credit_card: { number: "4000001240000000" })
 
       purchase = Purchase.last
       expect(purchase.country).to eq("Canada")
