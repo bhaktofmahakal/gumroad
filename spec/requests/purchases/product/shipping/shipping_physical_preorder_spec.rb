@@ -75,8 +75,12 @@ describe("Product Page - Shipping physical preoder", type: :system, js: true, sh
     visit "/l/#{@product.unique_permalink}"
     add_to_cart(@product)
     check_out(@product, address: { street: "3029 W Sherman Rd", city: "San Tan Valley", state: "AZ", zip_code: "85144" }, should_verify_address: true) do
-      zip = find_field("ZIP code")
-      page.execute_script("arguments[0].focus(); arguments[0].blur();", zip)
+      wait_for_ajax
+      expect(page).to have_field("ZIP code", with: "85144")
+      fill_in "ZIP code", with: ""
+      fill_in "ZIP code", with: "85144"
+      find_field("ZIP code").send_keys(:tab)
+      wait_for_ajax
       expect(page).to have_text("Sales tax US$1.07", normalize_ws: true)
       expect(page).to have_text("Subtotal US$16", normalize_ws: true)
       expect(page).to have_text("Shipping rate US$4", normalize_ws: true)
