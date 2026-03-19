@@ -126,6 +126,7 @@ Reduce the number of flaky test failures in the Gumroad CI pipeline. Tests run o
 | 23285462696 | 0 | 0 | Eighth clean run! Embed spec fix validated |
 | 23286461571 | 2 | 2 | preorder_spec:74 tax recur + form_spec preview load (fixes pushed) |
 | 23287615726 | 1 | 5 | Chrome crash (infrastructure, not test code) |
+| 23288781358 | 1 | 1 | bundle_spec SAVEPOINT error (thumbnail variant, sporadic) |
 
 ### Experiment 8: Shipping preorder tax wait (663164330)
 - **Target**: `spec/requests/purchases/product/shipping/shipping_physical_preorder_spec.rb:74` — "Sales tax US$1.07" not found before checkout
@@ -180,4 +181,5 @@ Reduce the number of flaky test failures in the Gumroad CI pipeline. Tests run o
 - `spec/requests/purchases/product/taxes_spec.rb:3735` — Canada Tax "assigns the selected province" VCR threading issue
 - `spec/requests/settings/payments_spec.rb` — Stripe rate limit cascade (partially mitigated by StripeRetryHelper)
 - `spec/services/exports/payouts/annual_spec.rb` — date ordering in CSV export (rare)
+- `spec/requests/checkout/bundle_spec.rb:163` — SAVEPOINT error during thumbnail variant processing (same class as discover_spec)
 - Various sporadic Chrome/Selenium issues: xpath "/html" not found, undefined method 'map' for true, Chrome crash
