@@ -50,4 +50,48 @@ Reduce the number of flaky test failures in the Gumroad CI pipeline. Tests run o
 - Each experiment = one fix attempt, pushed to branch, validated via CI
 
 ## What's Been Tried
-(Nothing yet — this is the initial session)
+
+### Experiment 1: Stub Stripe account creation (a8f3a8c9d)
+- **Target**: `spec/requests/settings/payments_spec.rb:4156` — Ghanaian creator test
+- **Fix**: Stub Stripe account creation to avoid rate limiting from 42 parallel nodes
+- **CI Run**: 23267175798 — 1 failed job, 1 failed spec (password_spec, not payments)
+- **Status**: KEEP — payments_spec fixed
+
+### Experiment 2: Wait for totp_credential + secure redirect + discover variant (2fc6be9b8, cf0d626a9, 94d55fd4e)
+- **Target 1**: `spec/requests/settings/password_spec.rb:154` — totp_credential nil race condition
+  - **Fix**: Use `wait_until_true` to poll for credential before asserting
+- **Target 2**: `spec/requests/secure_redirect_spec.rb:66` — redirect test missing wait_for_ajax
+  - **Fix**: Add `wait_for_ajax` after clicking Continue (consistent with all other POST tests in file)
+- **Target 3**: `spec/requests/discover/discover_spec.rb:411` — thumbnail savepoint error
+  - **Fix**: Pre-process thumbnail variant before page visit to avoid server-side DB savepoint during request
+- **CI Run**: 23268614706 — 2 failed jobs, 2 failed specs (shipping_offer_codes + taxes)
+- **Status**: KEEP — password, secure_redirect, and discover specs all passed
+
+### Experiment 3: Checkout helper resilience + UTM links exact match (9bdf42436, 974c1234d)
+- **Target 1**: `spec/support/checkout_helpers.rb` — address verification `has_text?` crashes with `ElementNotFound` when page is blank
+  - **Fix**: Rescue `Capybara::ElementNotFound` in the address verification block, allowing the test to proceed to success assertions
+- **Target 2**: `spec/requests/analytics/utm_links_spec.rb:112` — pagination button "3" matches hex IDs containing "3"
+  - **Fix**: Use `exact: true` on negative button assertions
+- **CI Run**: 23269401982 — 2 failed jobs (1 broken node infrastructure + 1 TaxJar VCR)
+- **Status**: KEEP — all targeted fixes validated
+
+### Experiment 4: Customers spec pagination exact match (5ff035da2)
+- **Target**: `spec/requests/customers/customers_spec.rb:207` — same pagination button "3" substring matching issue as UTM links
+  - **Fix**: Use `exact: true` on button assertions
+- **CI Run**: 23272295308 — 4 failed jobs (sections_spec click intercept, show_spec ambiguous match, Stripe cascade, annual_spec)
+- **Status**: KEEP
+
+### Experiment 5: Sections JS click + show ambiguous match (ed2f21270, a3282ff65, b680e14c6)
+- **Target 1**: `spec/requests/products/show/sections_spec.rb:59` — "Edit section" button covered by fixed Product information bar
+  - **Fix**: Use `execute_script` to scrollIntoView and click via JS, bypassing native click interception
+- **Target 2**: `spec/requests/products/show/show_spec.rb:176` — `within "[role='listitem']"` finds 2 elements
+  - **Fix**: Add `match: :first` to scope to the primary cart item
+- **Failed attempt**: Broad Stripe stub at Payout Information Collection level (7f1875ba1) — broke 11 jobs because tests assert `stripe_account.present?`. Reverted in b680e14c6.
+- **CI Run**: 23275419428 — **0 failed jobs, 0 failed specs** (first fully clean run!)
+- **Status**: KEEP
+
+### Remaining Issues (for monitoring)
+- `spec/requests/purchases/product/taxes_spec.rb` — TaxJar VCR flakiness (~20-30% of runs)
+- `spec/requests/settings/payments_spec.rb` — Stripe rate limit cascade (partially mitigated by StripeRetryHelper)
+- `spec/services/exports/payouts/annual_spec.rb` — date ordering in CSV export (rare)
+- Various sporadic Chrome/Selenium issues: stale element, undefined method 'map' for true, xpath "/html" not found
