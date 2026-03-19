@@ -68,14 +68,15 @@ describe("Product Edit Integrations edit - Circle", :without_circle_rate_limit, 
 
     it "shows error on invalid api_key" do
       vcr_turned_on do
-        VCR.use_cassette("#{@vcr_cassette_prefix} shows error on invalid api_key", allow_playback_repeats: true) do
+        VCR.use_cassette("#{@vcr_cassette_prefix} shows error on invalid api_key") do
           visit edit_link_path(@product)
-          check "Invite your customers to a Circle community", allow_label_click: true
-          fill_in "Type or paste your API token", with: "invalid_api_key"
-          click_on("Load communities")
-          expect(page).to have_text("Could not retrieve communities from Circle. Please check your API key.")
         end
       end
+
+      check "Invite your customers to a Circle community", allow_label_click: true
+      fill_in "Type or paste your API token", with: "invalid_api_key"
+      click_on("Load communities")
+      expect(page).to have_text("Could not retrieve communities from Circle. Please check your API key.")
     end
 
     context "integration for product with multiple versions" do
