@@ -16,7 +16,7 @@ describe("Product Edit Integrations edit - Circle", :without_circle_rate_limit, 
 
   include_context "with switching account to user as admin for seller"
 
-  describe "circle integration" do
+  describe "circle integration", force_vcr_on: true do
     before do
       @vcr_cassette_prefix = "#{@vcr_cassette_prefix} circle integration"
     end
@@ -66,7 +66,7 @@ describe("Product Edit Integrations edit - Circle", :without_circle_rate_limit, 
       expect(page).to_not have_field("Type or paste your API token")
     end
 
-    it "shows error on invalid api_key" do
+    it "shows error on invalid api_key", force_vcr_on: false do
       vcr_turned_on do
         VCR.use_cassette("#{@vcr_cassette_prefix} shows error on invalid api_key") do
           visit edit_link_path(@product)
