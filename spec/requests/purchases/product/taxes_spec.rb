@@ -3816,11 +3816,14 @@ describe("Product Page - Tax Scenarios", type: :system, js: true) do
         expect(page).to have_text("Total US$113", normalize_ws: true)
 
         select "BC", from: "Province"
-        find_field("Province").send_keys(:tab)
+        page.execute_script("document.activeElement.blur()")
         wait_for_ajax
         expect(page).to have_text("Total US$112", normalize_ws: true)
 
-        check_out(product, address: { street: "568 Beatty St", city: "Vancouver", state: "BC", zip_code: "V6B 2L3" }, should_verify_address: true)
+        check_out(product, address: { street: "568 Beatty St", city: "Vancouver", state: "BC", zip_code: "V6B 2L3" }, should_verify_address: true) do
+          wait_for_ajax
+          expect(page).to have_text("Total US$112", normalize_ws: true)
+        end
 
         purchase = Purchase.last
         expect(purchase.total_transaction_cents).to eq(112_00)
