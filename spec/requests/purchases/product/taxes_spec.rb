@@ -56,6 +56,7 @@ describe("Product Page - Tax Scenarios", type: :system, js: true) do
         visit("/l/#{@product.unique_permalink}")
         add_to_cart(@product, option: "type 1")
         check_out(@product, address: { street: "3029 W Sherman Rd", city: "San Tan Valley", state: "AZ", zip_code: "85144" }, should_verify_address: true) do
+          expect(page).to have_field("ZIP code", with: "85144")
           find_field("ZIP code").send_keys(:tab)
           wait_for_ajax
           expect(page).to have_text("Total US$555.16", normalize_ws: true)
@@ -89,6 +90,7 @@ describe("Product Page - Tax Scenarios", type: :system, js: true) do
         visit "/l/#{@product.unique_permalink}/taxoffer"
         add_to_cart(@product, offer_code:)
         check_out(@product, address: { street: "3029 W Sherman Rd", city: "San Tan Valley", state: "AZ", zip_code: "85144" }, should_verify_address: true) do
+          expect(page).to have_field("ZIP code", with: "85144")
           find_field("ZIP code").send_keys(:tab)
           wait_for_ajax
           expect(page).to have_text("Total US$442.80", normalize_ws: true)
@@ -171,6 +173,7 @@ describe("Product Page - Tax Scenarios", type: :system, js: true) do
 
       add_to_cart(product)
       check_out(product, zip_code: "53703") do
+        expect(page).to have_field("ZIP code", with: "53703")
         find_field("ZIP code").send_keys(:tab)
         wait_for_ajax
         expect(page).to have_text("Total US$105.50", normalize_ws: true)
@@ -191,6 +194,7 @@ describe("Product Page - Tax Scenarios", type: :system, js: true) do
 
       add_to_cart(product)
       check_out(product, address: { street: "1 S Pinckney St", state: "WI", city: "Madison", zip_code: "53703" }, should_verify_address: true) do
+        expect(page).to have_field("ZIP code", with: "53703")
         find_field("ZIP code").send_keys(:tab)
         wait_for_ajax
         expect(page).to have_text("Total US$105.50", normalize_ws: true)
@@ -211,6 +215,7 @@ describe("Product Page - Tax Scenarios", type: :system, js: true) do
 
       add_to_cart(product)
       check_out(product, zip_code: "98121") do
+        expect(page).to have_field("ZIP code", with: "98121")
         find_field("ZIP code").send_keys(:tab)
         wait_for_ajax
         expect(page).to have_text("Total US$110.35", normalize_ws: true)
@@ -231,6 +236,7 @@ describe("Product Page - Tax Scenarios", type: :system, js: true) do
 
       add_to_cart(product)
       check_out(product, address: { street: "2031 7th Ave", state: "WA", city: "Seattle", zip_code: "98121" }, should_verify_address: true) do
+        expect(page).to have_field("ZIP code", with: "98121")
         find_field("ZIP code").send_keys(:tab)
         wait_for_ajax
         expect(page).to have_text("Total US$110.35", normalize_ws: true)
@@ -251,6 +257,7 @@ describe("Product Page - Tax Scenarios", type: :system, js: true) do
 
       add_to_cart(product)
       check_out(product, zip_code: "53703") do
+        expect(page).to have_field("ZIP code", with: "53703")
         find_field("ZIP code").send_keys(:tab)
         wait_for_ajax
         expect(page).to have_text("Total US$105.50", normalize_ws: true)
@@ -271,6 +278,7 @@ describe("Product Page - Tax Scenarios", type: :system, js: true) do
 
       add_to_cart(product)
       check_out(product, zip_code: "98121") do
+        expect(page).to have_field("ZIP code", with: "98121")
         find_field("ZIP code").send_keys(:tab)
         wait_for_ajax
         expect(page).to have_text("Total US$110.35", normalize_ws: true)
