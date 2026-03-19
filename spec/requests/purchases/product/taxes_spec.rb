@@ -13,7 +13,10 @@ describe("Product Page - Tax Scenarios", type: :system, js: true) do
     it "calls the tax endpoint for a real zip code that doesn't show in the enterprise zip codes database" do
       visit("/l/#{@product.unique_permalink}")
       add_to_cart(@product)
-      check_out(@product, address: { street: "3029 W Sherman Rd", city: "San Tan Valley", state: "AZ", zip_code: "85144", country: "US" }, should_verify_address: true)
+      check_out(@product, address: { street: "3029 W Sherman Rd", city: "San Tan Valley", state: "AZ", zip_code: "85144", country: "US" }, should_verify_address: true) do
+        wait_for_ajax
+        expect(page).to have_text("Total US$553.50", normalize_ws: true)
+      end
 
       expect(page).to have_text("Your purchase was successful!")
 
@@ -49,7 +52,10 @@ describe("Product Page - Tax Scenarios", type: :system, js: true) do
 
         visit("/l/#{@product.unique_permalink}")
         add_to_cart(@product, option: "type 1")
-        check_out(@product, address: { street: "3029 W Sherman Rd", city: "San Tan Valley", state: "AZ", zip_code: "85144" }, should_verify_address: true)
+        check_out(@product, address: { street: "3029 W Sherman Rd", city: "San Tan Valley", state: "AZ", zip_code: "85144" }, should_verify_address: true) do
+          wait_for_ajax
+          expect(page).to have_text("Total US$555.16", normalize_ws: true)
+        end
 
         expect(page).to have_text("Your purchase was successful!")
 
@@ -78,7 +84,10 @@ describe("Product Page - Tax Scenarios", type: :system, js: true) do
 
         visit "/l/#{@product.unique_permalink}/taxoffer"
         add_to_cart(@product, offer_code:)
-        check_out(@product, address: { street: "3029 W Sherman Rd", city: "San Tan Valley", state: "AZ", zip_code: "85144" }, should_verify_address: true)
+        check_out(@product, address: { street: "3029 W Sherman Rd", city: "San Tan Valley", state: "AZ", zip_code: "85144" }, should_verify_address: true) do
+          wait_for_ajax
+          expect(page).to have_text("Total US$442.80", normalize_ws: true)
+        end
 
         expect(page).to have_text("Your purchase was successful!")
 
@@ -172,7 +181,10 @@ describe("Product Page - Tax Scenarios", type: :system, js: true) do
       expect(page).to have_text("$100")
 
       add_to_cart(product)
-      check_out(product, address: { street: "1 S Pinckney St", state: "WI", city: "Madison", zip_code: "53703" }, should_verify_address: true)
+      check_out(product, address: { street: "1 S Pinckney St", state: "WI", city: "Madison", zip_code: "53703" }, should_verify_address: true) do
+        wait_for_ajax
+        expect(page).to have_text("Total US$105.50", normalize_ws: true)
+      end
 
       purchase = Purchase.last
       expect(purchase.total_transaction_cents).to eq(105_50)
@@ -204,7 +216,10 @@ describe("Product Page - Tax Scenarios", type: :system, js: true) do
       expect(page).to have_text("$100")
 
       add_to_cart(product)
-      check_out(product, address: { street: "2031 7th Ave", state: "WA", city: "Seattle", zip_code: "98121" }, should_verify_address: true)
+      check_out(product, address: { street: "2031 7th Ave", state: "WA", city: "Seattle", zip_code: "98121" }, should_verify_address: true) do
+        wait_for_ajax
+        expect(page).to have_text("Total US$110.35", normalize_ws: true)
+      end
 
       purchase = Purchase.last
       expect(purchase.total_transaction_cents).to eq(110_35)
