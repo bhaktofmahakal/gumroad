@@ -168,7 +168,10 @@ describe("Product Page - Tax Scenarios", type: :system, js: true) do
       expect(page).to have_text("$100")
 
       add_to_cart(product)
-      check_out(product, zip_code: "53703")
+      check_out(product, zip_code: "53703") do
+        wait_for_ajax
+        expect(page).to have_text("Total US$105.50", normalize_ws: true)
+      end
 
       purchase = Purchase.last
       expect(purchase.total_transaction_cents).to eq(105_50)
@@ -203,7 +206,10 @@ describe("Product Page - Tax Scenarios", type: :system, js: true) do
       expect(page).to have_text("$100")
 
       add_to_cart(product)
-      check_out(product, zip_code: "98121")
+      check_out(product, zip_code: "98121") do
+        wait_for_ajax
+        expect(page).to have_text("Total US$110.35", normalize_ws: true)
+      end
 
       purchase = Purchase.last
       expect(purchase.total_transaction_cents).to eq(110_35)
@@ -238,7 +244,10 @@ describe("Product Page - Tax Scenarios", type: :system, js: true) do
       expect(page).to have_text("$100")
 
       add_to_cart(product)
-      check_out(product, zip_code: "53703")
+      check_out(product, zip_code: "53703") do
+        wait_for_ajax
+        expect(page).to have_text("Total US$105.50", normalize_ws: true)
+      end
 
       purchase = Purchase.last
       expect(purchase.total_transaction_cents).to eq(105_50)
@@ -254,7 +263,10 @@ describe("Product Page - Tax Scenarios", type: :system, js: true) do
       expect(page).to have_text("$100")
 
       add_to_cart(product)
-      check_out(product, zip_code: "98121")
+      check_out(product, zip_code: "98121") do
+        wait_for_ajax
+        expect(page).to have_text("Total US$110.35", normalize_ws: true)
+      end
 
       purchase = Purchase.last
       expect(purchase.total_transaction_cents).to eq(110_35)
