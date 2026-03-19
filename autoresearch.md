@@ -101,7 +101,16 @@ Reduce the number of flaky test failures in the Gumroad CI pipeline. Tests run o
 - **Target**: `spec/requests/purchases/product/taxes_spec.rb:3691,:3715,:3748` — Canada Tax tests get wrong total (10000 vs 11200)
   - Root cause: TaxJar API call is async; checkout submits before tax calculation completes
   - **Fix**: Add `wait_for_ajax` + `expect(page).to have_text("Total US$...")` before check_out to ensure tax is applied
-- **CI Run**: Pending
+- **CI Run**: 23277214585 — **0 failed jobs, 0 failed specs** (second fully clean run!)
+- **Status**: KEEP
+
+### Validation Results Summary
+| Run ID | Failed Jobs | Failed Specs | Notes |
+|--------|-------------|-------------|-------|
+| 23275419428 | 0 | 0 | First clean run |
+| 23275898731 | 1 | 1 | Circle integration (fixed in Exp 6) |
+| 23276517885 | 1 | 1 | Canada Tax VCR (fixed in Exp 7) |
+| 23277214585 | 0 | 0 | Second clean run |
 
 ### Remaining Issues (for monitoring)
 - `spec/requests/purchases/product/taxes_spec.rb` — physical product tests may still have Chrome crash issues
