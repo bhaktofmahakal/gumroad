@@ -127,6 +127,7 @@ Reduce the number of flaky test failures in the Gumroad CI pipeline. Tests run o
 | 23286461571 | 2 | 2 | preorder_spec:74 tax recur + form_spec preview load (fixes pushed) |
 | 23287615726 | 1 | 5 | Chrome crash (infrastructure, not test code) |
 | 23288781358 | 1 | 1 | bundle_spec SAVEPOINT error (thumbnail variant, sporadic) |
+| 23290109410 | 2 | 6 | Chrome crash on 2 nodes (infrastructure, not test code) |
 
 ### Experiment 8: Shipping preorder tax wait (663164330)
 - **Target**: `spec/requests/purchases/product/shipping/shipping_physical_preorder_spec.rb:74` — "Sales tax US$1.07" not found before checkout
