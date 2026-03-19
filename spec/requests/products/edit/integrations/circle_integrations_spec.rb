@@ -68,7 +68,7 @@ describe("Product Edit Integrations edit - Circle", :without_circle_rate_limit, 
 
     it "shows error on invalid api_key" do
       vcr_turned_on do
-        VCR.use_cassette("#{@vcr_cassette_prefix} shows error on invalid api_key") do
+        VCR.use_cassette("#{@vcr_cassette_prefix} shows error on invalid api_key", allow_playback_repeats: true) do
           visit edit_link_path(@product)
         end
       end
@@ -91,7 +91,7 @@ describe("Product Edit Integrations edit - Circle", :without_circle_rate_limit, 
         @product.active_integrations << create(:circle_integration)
 
         vcr_turned_on do
-          VCR.use_cassette("#{@vcr_cassette_prefix} shows the integration toggle if product has an integration") do
+          VCR.use_cassette("#{@vcr_cassette_prefix} shows the integration toggle if product has an integration", allow_playback_repeats: true) do
             visit edit_link_path(@product)
           end
         end
@@ -101,7 +101,7 @@ describe("Product Edit Integrations edit - Circle", :without_circle_rate_limit, 
 
       it "hides the integration toggle if product does not have an integration" do
         vcr_turned_on do
-          VCR.use_cassette("#{@vcr_cassette_prefix} hides the integration toggle if product does not have an integration") do
+          VCR.use_cassette("#{@vcr_cassette_prefix} hides the integration toggle if product does not have an integration", allow_playback_repeats: true) do
             visit edit_link_path(@product)
           end
         end
@@ -167,7 +167,7 @@ describe("Product Edit Integrations edit - Circle", :without_circle_rate_limit, 
 
         expect do
           vcr_turned_on do
-            VCR.use_cassette("#{@vcr_cassette_prefix} disables integration for a version") do
+            VCR.use_cassette("#{@vcr_cassette_prefix} disables integration for a version", allow_playback_repeats: true) do
               visit edit_link_path(@product)
               within version_rows[0] do
                 within version_option_rows[0] do
@@ -196,7 +196,7 @@ describe("Product Edit Integrations edit - Circle", :without_circle_rate_limit, 
 
         expect do
           vcr_turned_on do
-            VCR.use_cassette("#{@vcr_cassette_prefix} disables integration for a version if integration is removed from the product") do
+            VCR.use_cassette("#{@vcr_cassette_prefix} disables integration for a version if integration is removed from the product", allow_playback_repeats: true) do
               visit edit_link_path(@product)
               uncheck "Invite your customers to a Circle community", allow_label_click: true
               save_change
@@ -227,7 +227,7 @@ describe("Product Edit Integrations edit - Circle", :without_circle_rate_limit, 
         @subscription_product.active_integrations << create(:circle_integration)
 
         vcr_turned_on do
-          VCR.use_cassette("#{@vcr_cassette_prefix} shows the integration toggle if product has an integration") do
+          VCR.use_cassette("#{@vcr_cassette_prefix} shows the integration toggle if product has an integration", allow_playback_repeats: true) do
             visit edit_link_path(@subscription_product)
           end
         end
@@ -237,7 +237,7 @@ describe("Product Edit Integrations edit - Circle", :without_circle_rate_limit, 
 
       it "hides the integration toggle if product does not have an integration" do
         vcr_turned_on do
-          VCR.use_cassette("#{@vcr_cassette_prefix} hides the integration toggle if product does not have an integration") do
+          VCR.use_cassette("#{@vcr_cassette_prefix} hides the integration toggle if product does not have an integration", allow_playback_repeats: true) do
             visit edit_link_path(@subscription_product)
           end
         end
@@ -250,7 +250,7 @@ describe("Product Edit Integrations edit - Circle", :without_circle_rate_limit, 
 
         expect do
           vcr_turned_on do
-            VCR.use_cassette("#{@vcr_cassette_prefix} enables integration for a tier") do
+            VCR.use_cassette("#{@vcr_cassette_prefix} enables integration for a tier", allow_playback_repeats: true) do
               visit edit_link_path(@subscription_product)
               within tier_rows[1] do
                 check "Enable access to Circle community", allow_label_click: true
@@ -277,7 +277,7 @@ describe("Product Edit Integrations edit - Circle", :without_circle_rate_limit, 
 
         expect do
           vcr_turned_on do
-            VCR.use_cassette("#{@vcr_cassette_prefix} disables integration for a tier") do
+            VCR.use_cassette("#{@vcr_cassette_prefix} disables integration for a tier", allow_playback_repeats: true) do
               visit edit_link_path(@subscription_product)
               within tier_rows[0] do
                 uncheck "Enable access to Circle community", allow_label_click: true
@@ -304,7 +304,7 @@ describe("Product Edit Integrations edit - Circle", :without_circle_rate_limit, 
 
         expect do
           vcr_turned_on do
-            VCR.use_cassette("#{@vcr_cassette_prefix} disables integration for a tier if integration is removed from the product") do
+            VCR.use_cassette("#{@vcr_cassette_prefix} disables integration for a tier if integration is removed from the product", allow_playback_repeats: true) do
               visit edit_link_path(@subscription_product)
               uncheck "Invite your customers to a Circle community", allow_label_click: true
               save_change
