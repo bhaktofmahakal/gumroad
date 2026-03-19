@@ -128,6 +128,8 @@ Reduce the number of flaky test failures in the Gumroad CI pipeline. Tests run o
 | 23287615726 | 1 | 5 | Chrome crash (infrastructure, not test code) |
 | 23288781358 | 1 | 1 | bundle_spec SAVEPOINT error (thumbnail variant, sporadic) |
 | 23290109410 | 2 | 6 | Chrome crash on 2 nodes (infrastructure, not test code) |
+| 23291175323 | 1 | 1 | preorder_spec:74 tax again (VCR threading — fixed with force_vcr_on) |
+| 23292519245 | 0 | 0 | Ninth clean run! force_vcr_on: true on preorder tax test |
 
 ### Experiment 8: Shipping preorder tax wait (663164330)
 - **Target**: `spec/requests/purchases/product/shipping/shipping_physical_preorder_spec.rb:74` — "Sales tax US$1.07" not found before checkout
@@ -175,6 +177,14 @@ Reduce the number of flaky test failures in the Gumroad CI pipeline. Tests run o
   - **Fix**: Add `expect(page).to have_text("Product 1")` before `within_cart_item` to wait for preview content
 - **CI Run**: 23287615726 — 1 failed job (Chrome crash, infrastructure — not test code)
 - **Status**: KEEP — awaiting clean validation run
+
+### Experiment 14: Preorder tax force_vcr_on + JS nativeInputValueSetter
+- **Target**: `spec/requests/purchases/product/shipping/shipping_physical_preorder_spec.rb:74` — "Sales tax US$1.07" not found (recurring despite multiple fix attempts)
+  - Root cause: Same VCR threading issue as Circle integration. `setup_js` turns off VCR, then `:shipping` around hook turns it back on. Puma thread's TaxJar API call fires during the off window and isn't intercepted.
+  - **Fix**: Add `force_vcr_on: true` metadata to the test + use JS `nativeInputValueSetter` to force React onChange for ZIP field
+  - Previous attempts (send_keys, ctrl+a, clear+refill, toggle dropdown) all failed because the core issue was VCR not intercepting the API call, not the form interaction
+- **CI Run**: 23292519245 — **0 failed jobs, 0 failed specs** (ninth clean run!)
+- **Status**: KEEP
 
 ### Remaining Issues (for monitoring)
 - `spec/requests/products/edit/integrations/circle_integrations_spec.rb` — VCR threading issue with Circle API calls (sporadic)
