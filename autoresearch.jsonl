@@ -25,3 +25,4 @@
 {"type":"experiment","name":"Exp 19: Verification run 6 (cabdaf98d)","metrics":{"failed_jobs":0,"failed_specs":0},"notes":"CI run 23283351276 on cabdaf98d. ALL 60 jobs passed! 0 failures. Sixth clean run, three consecutive green passes. All flaky test fixes stable."}
 {"type":"experiment","name":"Exp 20: Verification run 7 (1218e0d01)","metrics":{"failed_jobs":0,"failed_specs":0},"notes":"CI run 23284023272. ALL 60 jobs passed! 0 failures. Four consecutive clean passes. Flaky test fixes fully validated."}
 {"type":"experiment","name":"Exp 20: Verification run 7 (42f00b49)","metrics":{"failed_jobs":0,"failed_specs":0},"notes":"CI run 23284023272 on 42f00b492. ALL 60 jobs passed\! 0 failures. Seventh clean run. Three consecutive clean runs in this session alone.","status":"keep"}
+{"run_id":23284023272,"commit":"15054febe","hypothesis":"Fourth verification run","result":"0/60 failed — fourth consecutive clean pass","next_steps":"Continue monitoring"}
