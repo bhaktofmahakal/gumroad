@@ -137,6 +137,8 @@ describe("Product Page - Tax Scenarios", type: :system, js: true) do
         visit @product.long_url
         add_to_cart(@product)
         fill_checkout_form(@product, address: { street: "3029 W Sherman Rd", city: "San Tan Valley", state: "AZ", zip_code: "85144" })
+        set_zip_code_via_js("85144")
+        wait_for_ajax
         expect(page).to have_text("Subtotal US$500", normalize_ws: true)
         expect(page).to_not have_text("Tip US$", normalize_ws: true)
         expect(page).to have_text("Sales tax US$53.50", normalize_ws: true)
