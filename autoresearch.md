@@ -134,6 +134,8 @@ Reduce the number of flaky test failures in the Gumroad CI pipeline. Tests run o
 | 23294585341 | 0 | 0 | Tenth clean run! Digital product tax fix validated |
 | 23295354893 | 60 | 60 | Infrastructure: Shakapacker asset compilation failure (not test code) |
 | 23296625312 | 0 | 0 | Eleventh clean run! VCR + thumbnail fixes validated |
+| 23298011248 | 0 | 0 | Twelfth clean run! |
+| 23299313404 | 1 | 1 | payments_spec Stripe rate limit + Chrome crash (infrastructure) |
 
 ### Experiment 8: Shipping preorder tax wait (663164330)
 - **Target**: `spec/requests/purchases/product/shipping/shipping_physical_preorder_spec.rb:74` — "Sales tax US$1.07" not found before checkout
@@ -206,6 +208,13 @@ Reduce the number of flaky test failures in the Gumroad CI pipeline. Tests run o
   - **Fix**: Pre-process thumbnail variants (`product.thumbnail.url`, `versioned_product.thumbnail.url`) in `before` block before page visits
 - **CI Run**: 23296625312 — **0 failed jobs, 0 failed specs** (eleventh clean run!)
 - **Status**: KEEP
+
+### Experiment 17: Proactive force_vcr_on for all shipping specs (9ef57230f)
+- **Target**: All shipping specs with `shipping: true` metadata that didn't have `force_vcr_on: true`
+  - Root cause: Same VCR threading issue as preorder tax, virtual countries — `setup_js` turns off VCR, Puma thread API calls miss interception
+  - **Fix**: Add `force_vcr_on: true` to describe blocks of shipping_spec, shipping_offer_codes_spec, shipping_physical_subscription_spec, shipping_physical_preorder_spec
+- **CI Run**: 23299313404 — 1 failed job (payments_spec Stripe rate limit, unrelated infrastructure)
+- **Status**: KEEP — targeted shipping specs all passed
 
 ### Remaining Issues (for monitoring)
 - `spec/requests/products/edit/integrations/circle_integrations_spec.rb` — VCR threading issue with Circle API calls (sporadic)
