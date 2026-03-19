@@ -137,6 +137,8 @@ Reduce the number of flaky test failures in the Gumroad CI pipeline. Tests run o
 | 23298011248 | 0 | 0 | Twelfth clean run! |
 | 23299313404 | 1 | 1 | payments_spec Stripe rate limit + Chrome crash (infrastructure) |
 | 23301020830 | 0 | 0 | Thirteenth clean run! All shipping force_vcr_on validated |
+| 23302704031 | 2 | 2 | payments_spec Stripe cascade + taxes_spec WI physical product |
+| 23305212973 | 1 | 1 | payments_spec Stripe rate limit (Liechtenstein, infrastructure) |
 
 ### Experiment 8: Shipping preorder tax wait (663164330)
 - **Target**: `spec/requests/purchases/product/shipping/shipping_physical_preorder_spec.rb:74` — "Sales tax US$1.07" not found before checkout
@@ -217,9 +219,18 @@ Reduce the number of flaky test failures in the Gumroad CI pipeline. Tests run o
 - **CI Run**: 23299313404 — 1 failed job (payments_spec Stripe rate limit, unrelated infrastructure)
 - **Status**: KEEP — targeted shipping specs all passed
 
+### Experiment 18: Replace nativeInputValueSetter/send_keys with fill_in for tax ZIP fields (46b6820a9, c78bce1e4)
+- **Target**: Physical product US sales tax tests in `taxes_spec.rb` — `send_keys(:tab)` unreliable for triggering blur
+  - Root cause: `send_keys(:tab)` sometimes fails to trigger React's onChange in headless Chrome on CI. The nativeInputValueSetter approach (Exp 14) works but is verbose.
+  - **Fix**: Replace with Capybara `fill_in "ZIP code", with: "XXXXX"` which clears + types + triggers native events. Combined with `have_text` wait (25s default) for tax total.
+  - **Attempt 1** (46b6820a9): nativeInputValueSetter for all 5 physical product tax tests
+  - **Attempt 2** (c78bce1e4): simplified to `fill_in` approach (parallel agent)
+- **CI Run**: 23305212973 — 1 failed job (payments_spec Stripe rate limit, unrelated)
+- **Status**: KEEP — targeted tax specs all passed
+
 ### Remaining Issues (for monitoring)
 - `spec/requests/products/edit/integrations/circle_integrations_spec.rb` — VCR threading issue with Circle API calls (sporadic)
 - `spec/requests/purchases/product/taxes_spec.rb:3735` — Canada Tax "assigns the selected province" VCR threading issue
-- `spec/requests/settings/payments_spec.rb` — Stripe rate limit cascade (partially mitigated by StripeRetryHelper)
+- `spec/requests/settings/payments_spec.rb` — Stripe rate limit cascade (partially mitigated by StripeRetryHelper). This is the primary remaining source of flaky failures — caused by 42 parallel nodes hitting Stripe simultaneously. Not fixable with test code changes.
 - `spec/services/exports/payouts/annual_spec.rb` — date ordering in CSV export (rare)
 - Various sporadic Chrome/Selenium issues: xpath "/html" not found, undefined method 'map' for true, Chrome crash
