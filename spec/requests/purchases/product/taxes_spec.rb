@@ -3697,6 +3697,8 @@ describe("Product Page - Tax Scenarios", type: :system, js: true) do
 
       expect(page).to have_select("Country", selected: "Canada")
       expect(page).to have_select("Province", selected: "BC")
+      wait_for_ajax
+      expect(page).to have_text("Total US$112", normalize_ws: true)
 
       check_out(product, zip_code: nil, credit_card: { number: "4000001240000000" })
 
@@ -3723,6 +3725,9 @@ describe("Product Page - Tax Scenarios", type: :system, js: true) do
       expect(page).to have_select("Province", selected: "ON")
 
       select "QC", from: "Province"
+      wait_for_ajax
+      expect(page).to have_text("Total US$114.98", normalize_ws: true)
+
       check_out(product, zip_code: nil, credit_card: { number: "4000001240000000" })
 
       purchase = Purchase.last
@@ -3749,6 +3754,7 @@ describe("Product Page - Tax Scenarios", type: :system, js: true) do
 
         expect(page).to have_select("Country", selected: "Canada")
         expect(page).to have_select("Province", selected: "ON")
+        wait_for_ajax
 
         check_out(product, address: { street: "568 Beatty St", city: "Vancouver", state: "BC", zip_code: "V6B 2L3" }, should_verify_address: true)
 
