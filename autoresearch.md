@@ -113,14 +113,25 @@ Reduce the number of flaky test failures in the Gumroad CI pipeline. Tests run o
 | 23277214585 | 0 | 0 | Second clean run |
 | 23277765625 | 0 | 0 | Third clean run |
 | 23278249756 | 1 | 1 | Shipping preorder tax timing (fixed in Exp 8) |
+| 23278784509 | 1 | 1 | taxes_spec:13 async tax (fixed in Exp 9) |
+| 23279308447 | 1 | 2 | shipping_to_virtual_countries alert timing |
 
 ### Experiment 8: Shipping preorder tax wait (663164330)
 - **Target**: `spec/requests/purchases/product/shipping/shipping_physical_preorder_spec.rb:74` — "Sales tax US$1.07" not found before checkout
   - Root cause: Tax calculation is async after address entry; assertion runs before TaxJar response is processed
   - **Fix**: Add `wait_for_ajax` in the checkout block before tax assertions
-- **CI Run**: Pending
+- **CI Run**: 23278784509 — 1 failed job (taxes_spec:13 — same async tax issue, fixed in Exp 9)
+- **Status**: KEEP
+
+### Experiment 9: Wait for tax in US sales tax tests (a32c035a3)
+- **Target**: `spec/requests/purchases/product/taxes_spec.rb:13,:55,:84,:178,:210` — US sales tax tests submit checkout before TaxJar response
+  - Root cause: Same as Exp 7/8 — async tax calculation not complete before checkout submission
+  - **Fix**: Add `wait_for_ajax` + total text assertion blocks to `check_out` calls in 5 physical product tax tests
+- **CI Run**: 23279308447 — 1 failed job (shipping_to_virtual_countries_spec — alert timing, unrelated)
+- **Status**: KEEP — targeted tax specs all passed
 
 ### Remaining Issues (for monitoring)
+- `spec/requests/purchases/product/shipping/shipping_to_virtual_countries_spec.rb` — alert timing race condition in success message
 - `spec/requests/purchases/product/taxes_spec.rb` — physical product tests may still have Chrome crash issues
 - `spec/requests/settings/payments_spec.rb` — Stripe rate limit cascade (partially mitigated by StripeRetryHelper)
 - `spec/services/exports/payouts/annual_spec.rb` — date ordering in CSV export (rare)
