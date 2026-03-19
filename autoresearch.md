@@ -139,6 +139,7 @@ Reduce the number of flaky test failures in the Gumroad CI pipeline. Tests run o
 | 23301020830 | 0 | 0 | Thirteenth clean run! All shipping force_vcr_on validated |
 | 23302704031 | 2 | 2 | payments_spec Stripe cascade + taxes_spec WI physical product |
 | 23305212973 | 1 | 1 | payments_spec Stripe rate limit (Liechtenstein, infrastructure) |
+| 23306870879 | 1 | 3 | Node-level VCR failure: 3 tax tests on Slow 32 got 0 tax (sporadic) |
 
 ### Experiment 8: Shipping preorder tax wait (663164330)
 - **Target**: `spec/requests/purchases/product/shipping/shipping_physical_preorder_spec.rb:74` — "Sales tax US$1.07" not found before checkout
