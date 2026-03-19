@@ -112,6 +112,13 @@ Reduce the number of flaky test failures in the Gumroad CI pipeline. Tests run o
 | 23276517885 | 1 | 1 | Canada Tax VCR (fixed in Exp 7) |
 | 23277214585 | 0 | 0 | Second clean run |
 | 23277765625 | 0 | 0 | Third clean run |
+| 23278249756 | 1 | 1 | Shipping preorder tax timing (fixed in Exp 8) |
+
+### Experiment 8: Shipping preorder tax wait (663164330)
+- **Target**: `spec/requests/purchases/product/shipping/shipping_physical_preorder_spec.rb:74` — "Sales tax US$1.07" not found before checkout
+  - Root cause: Tax calculation is async after address entry; assertion runs before TaxJar response is processed
+  - **Fix**: Add `wait_for_ajax` in the checkout block before tax assertions
+- **CI Run**: Pending
 
 ### Remaining Issues (for monitoring)
 - `spec/requests/purchases/product/taxes_spec.rb` — physical product tests may still have Chrome crash issues
