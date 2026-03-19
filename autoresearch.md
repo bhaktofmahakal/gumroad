@@ -118,6 +118,7 @@ Reduce the number of flaky test failures in the Gumroad CI pipeline. Tests run o
 | 23279976826 | 1 | 2 | circle_integrations_spec (VCR threading) |
 | 23280560920 | 2 | 3 | circle invalid_api_key (force_vcr_on broke it) + Canada Tax VCR |
 | 23281217235 | 2 | 3 | shipping_preorder_spec:74 tax blur + circle_integrations_spec:24,:112 VCR |
+| 23282050777 | 0 | 0 | Fourth clean run! Circle force_vcr_on + shipping preorder tax fix |
 
 ### Experiment 8: Shipping preorder tax wait (663164330)
 - **Target**: `spec/requests/purchases/product/shipping/shipping_physical_preorder_spec.rb:74` — "Sales tax US$1.07" not found before checkout
@@ -139,13 +140,15 @@ Reduce the number of flaky test failures in the Gumroad CI pipeline. Tests run o
   - **Attempt 2** (2cc32d6dd): `force_vcr_on: true` on describe block + `force_vcr_on: false` on the invalid_api_key test to override. This keeps VCR on for all tests that need it but lets the invalid key test work normally.
   - **Root cause**: VCR is turned off by `setup_js` for JS tests, then turned back on by `vcr_turned_on`. The off/on cycle creates a window where Puma thread requests miss VCR interception.
   - **Also added**: `allow_playback_repeats: true` to all VCR cassette calls (kept, not harmful)
-- **Status**: TESTING — awaiting CI validation
+- **CI Run**: 23282050777 — **0 failed jobs, 0 failed specs** (fourth fully clean run!)
+- **Status**: KEEP
 
-### Experiment 11: Shipping preorder tax blur via JS (2cc32d6dd)
+### Experiment 11: Shipping preorder tax via send_keys select-all (d24f8d613)
 - **Target**: `spec/requests/purchases/product/shipping/shipping_physical_preorder_spec.rb:74` — "Sales tax US$1.07" not found
   - Root cause: `send_keys(:tab)` doesn't reliably trigger blur in headless Chrome when focus is in Stripe iframe
-  - **Fix**: Replace `send_keys(:tab)` with `execute_script("arguments[0].focus(); arguments[0].blur();")` to directly dispatch DOM events
-- **Status**: TESTING — awaiting CI validation
+  - **Fix**: Use `send_keys([:control, "a"], "85144", :tab)` to select all, retype ZIP, and tab out — forces React onChange events
+- **CI Run**: 23282050777 — **0 failed jobs, 0 failed specs**
+- **Status**: KEEP
 
 ### Remaining Issues (for monitoring)
 - `spec/requests/products/edit/integrations/circle_integrations_spec.rb` — VCR threading issue with Circle API calls (sporadic)
