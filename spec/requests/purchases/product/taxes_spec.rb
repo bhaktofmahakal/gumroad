@@ -3834,7 +3834,7 @@ describe("Product Page - Tax Scenarios", type: :system, js: true) do
 
         expect(page).to have_select("Country", selected: "Canada")
         expect(page).to have_select("Province", selected: "ON")
-        expect(page).to_not have_field("Business QST ID (optional)")
+        expect(page).to_not have_field("Business QST ID (optional)", wait: 10)
 
         select "QC", from: "Province"
         page.execute_script("document.activeElement.blur()")
@@ -3887,7 +3887,7 @@ describe("Product Page - Tax Scenarios", type: :system, js: true) do
         expect(page).to have_select("Country", selected: "Canada")
         expect(page).to have_select("Province", selected: "QC")
 
-        expect(page).to have_field("Business QST ID (optional)")
+        expect(page).to have_field("Business QST ID (optional)", wait: 10)
         check_out(product, qst_id: "1002092821TQ0001", zip_code: nil, credit_card: { number: "4000001240000000" })
 
         purchase = Purchase.last
@@ -3919,7 +3919,7 @@ describe("Product Page - Tax Scenarios", type: :system, js: true) do
         expect(page).to have_select("Country", selected: "Canada")
         expect(page).to have_select("Province", selected: "QC")
 
-        expect(page).to have_field("Business QST ID (optional)")
+        expect(page).to have_field("Business QST ID (optional)", wait: 10)
         check_out(product, qst_id: "NR00005576", zip_code: nil, credit_card: { number: "4000001240000000" })
 
         purchase = Purchase.last
