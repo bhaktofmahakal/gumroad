@@ -528,6 +528,9 @@ def vcr_turned_on
 end
 
 def only_matching_vcr_request_from(hosts)
+  hooks = VCR.request_ignorer.hooks[:ignore_request]
+  original_hooks = hooks.dup
+
   VCR.configure do |c|
     c.ignore_request do |request|
       !hosts.any? { |host| request.uri.match?(host) }
@@ -537,6 +540,7 @@ def only_matching_vcr_request_from(hosts)
   begin
     yield
   ensure
+    hooks.replace(original_hooks)
     configure_vcr
   end
 end
