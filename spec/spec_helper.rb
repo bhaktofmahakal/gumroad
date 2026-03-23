@@ -491,7 +491,14 @@ def setup_js(val = false)
     # Opt-in escape hatch for specific flaky JS specs that still rely on VCR cassettes (e.g. TaxJar rate-of-the-day).
     VCR.turn_off! unless metadata[:force_vcr_on]
     # See also https://github.com/teamcapybara/capybara#gotchas
-    WebMock.allow_net_connect!(net_http_connect_on_start: true)
+    # When VCR is forced on, skip net_http_connect_on_start to prevent real TCP
+    # connections to external APIs (e.g. TaxJar sandbox) that fail before VCR
+    # can intercept and return cassette responses.
+    if metadata[:force_vcr_on]
+      WebMock.allow_net_connect!
+    else
+      WebMock.allow_net_connect!(net_http_connect_on_start: true)
+    end
   else
     VCR.turn_on!
     WebMock.disable_net_connect!(allow_localhost: true, allow: ["api.knapsackpro.com"])
