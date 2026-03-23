@@ -4,8 +4,6 @@ import * as React from "react";
 // Useful to update hook consumer-supplied event handler without tearing down and setting up a new event listener.
 export const useRefToLatest = <T>(value: T): React.MutableRefObject<T> => {
   const ref = React.useRef(value);
-  React.useEffect(() => {
-    ref.current = value;
-  }, [value]);
+  ref.current = value;
   return ref;
 };

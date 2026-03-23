@@ -215,25 +215,28 @@ export const hasShipping = (state: State) => state.products.some((item) => item.
 
 export const getErrors = (state: State) => (state.status.type === "input" ? state.status.errors : new Set());
 
-export const loadSurcharges = (state: State) => {
+export const loadSurcharges = (state: State, abortSignal?: AbortSignal) => {
   const isGift = state.gift !== null;
 
-  return getSurcharges({
-    products: state.products.map((item) => ({
-      permalink: item.permalink,
-      quantity: item.quantity,
-      price:
-        item.hasFreeTrial && !isGift
-          ? 0
-          : Math.round(item.price + (computeTipForPrice(state, item.price, item.permalink) ?? 0)),
-      subscription_id: item.subscription_id,
-      recommended_by: item.recommended_by,
-    })),
-    country: state.country,
-    state: state.state,
-    vat_id: state.vatId,
-    postal_code: state.zipCode,
-  });
+  return getSurcharges(
+    {
+      products: state.products.map((item) => ({
+        permalink: item.permalink,
+        quantity: item.quantity,
+        price:
+          item.hasFreeTrial && !isGift
+            ? 0
+            : Math.round(item.price + (computeTipForPrice(state, item.price, item.permalink) ?? 0)),
+        subscription_id: item.subscription_id,
+        recommended_by: item.recommended_by,
+      })),
+      country: state.country,
+      state: state.state,
+      vat_id: state.vatId,
+      postal_code: state.zipCode,
+    },
+    abortSignal,
+  );
 };
 
 export function createReducer(initial: {
@@ -419,7 +422,7 @@ export function createReducer(initial: {
       try {
         const abort = new AbortController();
         dispatch({ type: "set-value", surcharges: { type: "loading", abort: () => abort.abort() } });
-        const result = await loadSurcharges(state);
+        const result = await loadSurcharges(state, abort.signal);
         dispatch({ type: "set-value", surcharges: { type: "loaded", result } });
       } catch (e) {
         if (e instanceof AbortError) return;
