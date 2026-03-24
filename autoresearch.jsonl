@@ -7,3 +7,4 @@
 {"run":6,"commit":"8ff94f1","metric":0,"metrics":{},"status":"crash","baseline":false,"description":"CI run 4: webpack build failure in CI (empty manifest.json). Not a test failure — CI infra issue.","timestamp":1774389126131,"segment":0,"confidence":null}
 {"run":7,"commit":"d9a0786","metric":1,"metrics":{},"status":"keep","baseline":false,"description":"CI run 5: green (1st consecutive after reset)","timestamp":1774390299322,"segment":0,"confidence":null}
 {"run":8,"commit":"9888ac1","metric":2,"metrics":{},"status":"keep","baseline":false,"description":"CI run 6: green (2nd consecutive)","timestamp":1774391491276,"segment":0,"confidence":null}
+{"run":9,"commit":"9a77c55","metric":3,"metrics":{},"status":"keep","baseline":false,"description":"CI run 7: green (3rd consecutive)","timestamp":1774392547436,"segment":0,"confidence":null}

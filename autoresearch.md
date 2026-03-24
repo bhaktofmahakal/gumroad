@@ -7,7 +7,6 @@
 `autoresearch.sh` — should emit `METRIC name=number` lines for consecutive_greens.
 
 ## What's Been Tried
-- #1 baseline keep 1 6f47c49 — First CI run with fix: batch ID mappings in save_files! to prevent transitive collision
 - #2 crash 1 7179dd2 — CI infra failure: git checkout failed due to .claude/worktrees submodule path in .gitmodules. Not a test failure.
 - #3 crash 1 7179dd2 — Same CI infra failure on rerun — .claude/worktrees tracked as git submodules breaks checkout
 - #4 keep 2 595e970 — CI run 2 green (also fixed .claude/worktrees blocking checkout)
@@ -15,9 +14,27 @@
 - #6 crash 0 8ff94f1 — CI run 4: webpack build failure in CI (empty manifest.json). Not a test failure — CI infra issue.
 - #7 keep 1 d9a0786 — CI run 5: green (1st consecutive after reset)
 - #8 keep 2 9888ac1 — CI run 6: green (2nd consecutive)
+- #9 keep 3 9a77c55 — CI run 7: green (3rd consecutive)
 
 ## Plugin Checkpoint
-- Last updated: 2026-03-24T22:43:58.874Z
+- Last updated: 2026-03-24T23:06:42.102Z
+- Runs tracked: 9 current / 9 total
+- Baseline: 1
+- Best kept: 3
+- Confidence: n/a
+- Canonical branch: fix/flaky-dropbox-test
+- Last logged run: #9 keep 9a77c55 — CI run 7: green (3rd consecutive)
+- Pending run awaiting log_experiment: cd /Users/gumclaw/.openclaw/workspace/repos/gumroad && gh run watch 23515965864 --exit-status 2>&1; echo "EXIT_CODE=$?" (n/a)
+
+Z
+- Runs tracked: 9 current / 9 total
+- Baseline: 1
+- Best kept: 3
+- Confidence: n/a
+- Canonical branch: fix/flaky-dropbox-test
+- Last logged run: #9 keep 9a77c55 — CI run 7: green (3rd consecutive)
+
+Z
 - Runs tracked: 8 current / 8 total
 - Baseline: 1
 - Best kept: 2

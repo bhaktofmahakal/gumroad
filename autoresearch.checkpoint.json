@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": 1774392238874,
+  "updatedAt": 1774393602102,
   "sessionStartCommit": "8e9dfa4",
   "canonicalBranch": "fix/flaky-dropbox-test",
   "carryForwardContext": null,
@@ -10,37 +10,25 @@
     "metricUnit": "",
     "bestDirection": "higher",
     "currentSegment": 0,
-    "currentRunCount": 8,
-    "totalRunCount": 8,
+    "currentRunCount": 9,
+    "totalRunCount": 9,
     "currentBaselineMetric": 1,
-    "currentBestMetric": 2,
+    "currentBestMetric": 3,
     "confidence": null
   },
   "lastLoggedRun": {
-    "run": 8,
-    "commit": "9888ac1",
-    "metric": 2,
+    "run": 9,
+    "commit": "9a77c55",
+    "metric": 3,
     "metrics": {},
     "status": "keep",
     "baseline": false,
-    "description": "CI run 6: green (2nd consecutive)",
-    "timestamp": 1774391491276,
+    "description": "CI run 7: green (3rd consecutive)",
+    "timestamp": 1774392547436,
     "segment": 0,
     "confidence": null
   },
   "recentLoggedRuns": [
-    {
-      "run": 1,
-      "commit": "6f47c49",
-      "metric": 1,
-      "metrics": {},
-      "status": "keep",
-      "baseline": true,
-      "description": "First CI run with fix: batch ID mappings in save_files! to prevent transitive collision",
-      "timestamp": 1774385415100,
-      "segment": 0,
-      "confidence": null
-    },
     {
       "run": 2,
       "commit": "7179dd2",
@@ -124,18 +112,30 @@
       "timestamp": 1774391491276,
       "segment": 0,
       "confidence": null
+    },
+    {
+      "run": 9,
+      "commit": "9a77c55",
+      "metric": 3,
+      "metrics": {},
+      "status": "keep",
+      "baseline": false,
+      "description": "CI run 7: green (3rd consecutive)",
+      "timestamp": 1774392547436,
+      "segment": 0,
+      "confidence": null
     }
   ],
   "pendingRun": {
-    "command": "cd /Users/gumclaw/.openclaw/workspace/repos/gumroad && gh run watch 23515391695 --exit-status 2>&1; echo \"EXIT_CODE=$?\"",
-    "commit": "5a53816",
+    "command": "cd /Users/gumclaw/.openclaw/workspace/repos/gumroad && gh run watch 23515965864 --exit-status 2>&1; echo \"EXIT_CODE=$?\"",
+    "commit": "b371883",
     "primaryMetric": null,
     "metrics": {},
-    "durationSeconds": 715.287,
+    "durationSeconds": 1023.728,
     "exitCode": 0,
     "passed": true,
     "timedOut": false,
-    "tailOutput": "  ✓ Wait for services\n  ✓ Setup test database\n  * Run tests\n  * Archive capybara artifacts\n  * Archive test logs\n  * Clean up\n  * Post Run actions/checkout@v4\n  * Complete runner\n* Test Slow 16 (ID 68447198134)\n  ✓ Set up job\n  ✓ Set up runner\n  ✓ Run actions/checkout@v4\n  ✓ Login to Quay\n  ✓ Start services\n  ✓ Wait for services\n  ✓ Setup test database\n  * Run tests\n  * Archive capybara artifacts\n  * Archive test logs\n  * Clean up\n  * Post Run actions/checkout@v4\n  * Complete runner\n* Test Slow 42 (ID 68447198139)\n  ✓ Set up job\n  ✓ Set up runner\n  ✓ Run actions/checkout@v4\n  ✓ Login to Quay\n  ✓ Start services\n  ✓ Wait for services\n  ✓ Setup test database\n  * Run tests\n  * Archive capybara artifacts\n  * Archive test logs\n  * Clean up\n  * Post Run actions/checkout@v4\n  * Complete runner\n* Test Slow 44 (ID 68447198146)\n  ✓ Set up job\n  ✓ Set up runner\n  ✓ Run actions/checkout@v4\n  ✓ Login to Quay\n  ✓ Start services\n  ✓ Wait for services\n  ✓ Setup test database\n  * Run tests\n  * Archive capybara artifacts\n  * Archive test logs\n  * Clean up\n  * Post Run actions/checkout@v4\n  * Complete runner\n* Test Slow 43 (ID 68447198156)\n  ✓ Set up job\n  ✓ Set up runner\n  ✓ Run actions/checkout@v4\n  ✓ Login to Quay\n  ✓ Start services\n  ✓ Wait for services\n  ✓ Setup test database\n  * Run tests\n  * Archive capybara artifacts\n  * Archive test logs\n  * Clean up\n  * Post Run actions/checkout@v4\n  * Complete runner\n* Test Slow 41 (ID 68447198163)\n  ✓ Set up job\n  ✓ Set up runner\n  ✓ Run actions/checkout@v4\n  ✓ Login to Quay\n  ✓ Start services\n  ✓ Wait for services\n  ✓ Setup test database\n  * Run tests\n  * Archive capybara artifacts\n  * Archive test logs\n  * Clean up\n  * Post Run actions/checkout@v4\n  * Complete runner\nfailed to get run: HTTP 403: API rate limit exceeded for user ID 265388744. If you reach out to GitHub Support for help, please include the request ID E9DC:3103F8:6A56D7:1BB320A:69C313AB and timestamp 2026-03-24 22:43:58 UTC. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/github-terms/github-terms-of-service) (https://api.github.com/repos/antiwork/gumroad/actions/runs/23515391695?exclude_pull_requests=true)\nEXIT_CODE=1",
-    "capturedAt": 1774392238874
+    "tailOutput": "  ✓ Set up runner\n  ✓ Run actions/checkout@v4\n  ✓ Login to Quay\n  ✓ Start services\n  ✓ Wait for services\n  ✓ Setup test database\n  ✓ Run tests\n  - Archive capybara artifacts\n  - Archive test logs\n  ✓ Clean up\n  ✓ Post Run actions/checkout@v4\n  ✓ Complete runner\n  ✓ Complete job\n✓ Test Slow 28 in 9m43s (ID 68449059834)\n  ✓ Set up job\n  ✓ Set up runner\n  ✓ Run actions/checkout@v4\n  ✓ Login to Quay\n  ✓ Start services\n  ✓ Wait for services\n  ✓ Setup test database\n  ✓ Run tests\n  - Archive capybara artifacts\n  - Archive test logs\n  ✓ Clean up\n  ✓ Post Run actions/checkout@v4\n  ✓ Complete runner\n  ✓ Complete job\n✓ Test Slow 27 in 9m45s (ID 68449059839)\n  ✓ Set up job\n  ✓ Set up runner\n  ✓ Run actions/checkout@v4\n  ✓ Login to Quay\n  ✓ Start services\n  ✓ Wait for services\n  ✓ Setup test database\n  ✓ Run tests\n  - Archive capybara artifacts\n  - Archive test logs\n  ✓ Clean up\n  ✓ Post Run actions/checkout@v4\n  ✓ Complete runner\n  ✓ Complete job\n✓ Test Slow 29 in 9m45s (ID 68449059855)\n  ✓ Set up job\n  ✓ Set up runner\n  ✓ Run actions/checkout@v4\n  ✓ Login to Quay\n  ✓ Start services\n  ✓ Wait for services\n  ✓ Setup test database\n  ✓ Run tests\n  - Archive capybara artifacts\n  - Archive test logs\n  ✓ Clean up\n  ✓ Post Run actions/checkout@v4\n  ✓ Complete runner\n  ✓ Complete job\n✓ Test Slow 21 in 9m42s (ID 68449059861)\n  ✓ Set up job\n  ✓ Set up runner\n  ✓ Run actions/checkout@v4\n  ✓ Login to Quay\n  ✓ Start services\n  ✓ Wait for services\n  ✓ Setup test database\n  ✓ Run tests\n  - Archive capybara artifacts\n  - Archive test logs\n  ✓ Clean up\n  ✓ Post Run actions/checkout@v4\n  ✓ Complete runner\n  ✓ Complete job\n- Unblock deployment from Buildkite in 0s (ID 68450101773)\n\nANNOTATIONS\n! Node.js 20 actions are deprecated. The following actions are running on Node.js 20 and may not work as expected: actions/checkout@v4, nick-fields/retry@v3. Actions will be forced to run with Node.js 24 by default starting June 2nd, 2026. Please check if updated versions of these actions are available that support Node.js 24. To opt into Node.js 24 now, set the FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true environment variable on the runner or in your workflow file. Once Node.js 24 becomes the default, you can temporarily opt out by setting ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/\nBuild base image: .github#2\n\nEXIT_CODE=0",
+    "capturedAt": 1774393602102
   }
 }
