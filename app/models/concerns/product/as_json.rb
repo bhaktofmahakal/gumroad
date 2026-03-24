@@ -99,7 +99,7 @@ module Product::AsJson
         "recurrences" => is_tiered_membership? ? prices.alive.is_buy.map(&:recurrence).uniq : nil,
         "rich_content" => rich_content_json,
         "has_same_rich_content_for_all_variants" => has_same_rich_content_for_all_variants?,
-        "files" => ordered_alive_product_files.map { |f|
+        "files" => ordered_alive_product_files.map do |f|
           {
             id: f.external_id,
             name: f.display_name,
@@ -108,17 +108,17 @@ module Product::AsJson
             filetype: f.filetype,
             filegroup: f.filegroup,
           }
-        },
+        end,
         "covers" => display_asset_previews.as_json,
         "main_cover_id" => main_preview&.guid,
-        "bundle_products" => is_bundle? ? bundle_products.select(&:alive?).sort_by(&:position).map { |bp|
+        "bundle_products" => is_bundle? ? bundle_products.select(&:alive?).sort_by(&:position).map do |bp|
           {
             product_id: bp.product.external_id,
             variant_id: bp.variant&.external_id,
             quantity: bp.quantity,
             position: bp.position,
           }
-        } : [],
+        end : [],
         "variants" => variant_categories_alive.map do |cat|
           {
             title: cat.title,
