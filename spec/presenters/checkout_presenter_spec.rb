@@ -189,7 +189,8 @@ describe CheckoutPresenter do
           recommender_model_name: nil,
           call_start_time: nil,
           accepted_offer: nil,
-          pay_in_installments: false
+          pay_in_installments: false,
+          force_new_subscription: false
         }],
         max_allowed_cart_products: Cart::MAX_ALLOWED_CART_PRODUCTS,
         cart_save_debounce_ms: CheckoutPresenter::CART_SAVE_DEBOUNCE_DURATION_IN_SECONDS.in_milliseconds,
@@ -228,7 +229,8 @@ describe CheckoutPresenter do
             recommender_model_name: nil,
             call_start_time: nil,
             accepted_offer: nil,
-            pay_in_installments: false
+            pay_in_installments: false,
+            force_new_subscription: false
           },
           {
             product: a_hash_including(id: rental_product.external_id),
@@ -242,7 +244,8 @@ describe CheckoutPresenter do
             recommender_model_name: nil,
             call_start_time: nil,
             accepted_offer: nil,
-            pay_in_installments: false
+            pay_in_installments: false,
+            force_new_subscription: false
           },
           {
             product: a_hash_including(id: subscription_product.external_id),
@@ -256,7 +259,8 @@ describe CheckoutPresenter do
             recommender_model_name: nil,
             call_start_time: nil,
             accepted_offer: nil,
-            pay_in_installments: false
+            pay_in_installments: false,
+            force_new_subscription: false
           },
           {
             product: a_hash_including(id: versioned_product.external_id),
@@ -270,7 +274,8 @@ describe CheckoutPresenter do
             recommender_model_name: nil,
             call_start_time: nil,
             accepted_offer: nil,
-            pay_in_installments: false
+            pay_in_installments: false,
+            force_new_subscription: false
           }
         ]
       )
@@ -317,7 +322,8 @@ describe CheckoutPresenter do
             recommender_model_name: nil,
             call_start_time: nil,
             accepted_offer: nil,
-            pay_in_installments: false
+            pay_in_installments: false,
+            force_new_subscription: false
           }]
         )
       end
@@ -364,7 +370,8 @@ describe CheckoutPresenter do
             recommender_model_name: nil,
             call_start_time: nil,
             accepted_offer: nil,
-            pay_in_installments: false
+            pay_in_installments: false,
+            force_new_subscription: false
           }
         ]
       )

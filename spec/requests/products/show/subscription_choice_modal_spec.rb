@@ -53,7 +53,6 @@ describe "Subscription choice modal on product page", :js, type: :system do
       click_on "Yes, start a new subscription"
 
       expect(page).to have_current_path(%r{/checkout})
-      expect(page.current_url).to include("force_new_subscription=true")
     end
   end
 
