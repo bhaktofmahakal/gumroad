@@ -1054,6 +1054,7 @@ class Link < ApplicationRecord
     attrs[:price] = currency["min_price"] if purchasing_power_parity_enabled? && attrs[:price] != 0 && attrs[:price] < currency["min_price"]
     attrs[:quantity] = params[:quantity].to_i if params[:quantity].present?
     attrs[:call_start_time] = native_type == NATIVE_TYPE_CALL ? params[:call_start_time] : nil
+    attrs[:force_new_subscription] = !!params[:force_new_subscription] && is_recurring_billing
     attrs
   end
 

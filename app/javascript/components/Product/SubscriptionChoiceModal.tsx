@@ -1,0 +1,58 @@
+import * as React from "react";
+
+import { Button, NavigationButton } from "$app/components/Button";
+import { Modal } from "$app/components/Modal";
+import { Purchase } from "$app/components/Product";
+
+type Props = {
+  purchase: Purchase;
+  checkoutUrl: string;
+  open: boolean;
+  onClose: () => void;
+};
+
+export const SubscriptionChoiceModal = ({ purchase, checkoutUrl, open, onClose }: Props) => {
+  const newSubscriptionHref = React.useMemo(() => {
+    if (!checkoutUrl) return "";
+    const url = new URL(checkoutUrl);
+    url.searchParams.set("force_new_subscription", "true");
+    return url.toString();
+  }, [checkoutUrl]);
+
+  if (purchase.subscription_has_lapsed) {
+    return (
+      <Modal open={open} onClose={onClose} title="Resume your previous subscription?">
+        <p>
+          You've previously subscribed to this product. Would you like to <strong>pick up where you left off</strong>, or{" "}
+          <strong>start fresh with a new subscription</strong>?
+        </p>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <NavigationButton href={newSubscriptionHref} target="_top">
+            No, start a new subscription
+          </NavigationButton>
+          {purchase.membership ? (
+            <NavigationButton href={purchase.membership.manage_url} color="black" target="_blank">
+              Yes, resume subscription
+            </NavigationButton>
+          ) : null}
+        </div>
+      </Modal>
+    );
+  }
+
+  return (
+    <Modal open={open} onClose={onClose} title="You already have an active subscription">
+      <p>
+        You currently have an active subscription to this product. Would you like to <strong>start a new subscription</strong>?
+      </p>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Button onClick={onClose}>
+          Cancel
+        </Button>
+        <NavigationButton href={newSubscriptionHref} color="accent" target="_top">
+          Yes, start a new subscription
+        </NavigationButton>
+      </div>
+    </Modal>
+  );
+};

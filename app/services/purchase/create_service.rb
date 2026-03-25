@@ -179,7 +179,7 @@ class Purchase::CreateService < Purchase::BaseService
     end
 
     def should_check_for_restartable_subscription?
-      product.is_recurring_billing && !is_gift?
+      product.is_recurring_billing && !is_gift? && !params[:force_new_subscription]
     end
 
     def handle_existing_subscription
@@ -294,6 +294,7 @@ class Purchase::CreateService < Purchase::BaseService
     end
 
     def build_purchase(params_for_purchase)
+      params_for_purchase = params_for_purchase.except(:force_new_subscription)
       params_for_purchase[:country] = ISO3166::Country[params_for_purchase[:country]]&.common_name
 
       purchase = product.sales.build(params_for_purchase)

@@ -86,6 +86,7 @@ export const PLACEHOLDER_CART_ITEM: CartItem = {
   accepted_offer: null,
   call_start_time: null,
   pay_in_installments: false,
+  force_new_subscription: false,
 };
 
 export const PLACEHOLDER_CARD_PRODUCT: CardProduct = {

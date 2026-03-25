@@ -122,6 +122,7 @@ class CheckoutPresenter
       quantity: cart_item[:quantity],
       call_start_time: cart_item[:call_start_time],
       pay_in_installments: cart_item[:pay_in_installments],
+      force_new_subscription: cart_item[:force_new_subscription] || false,
       affiliate_id: params[:affiliate_id],
       recommended_by: params[:recommended_by],
       recommender_model_name: params[:recommender_model_name],

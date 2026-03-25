@@ -176,7 +176,7 @@ class Order::CreateService
       additional_params = purchase_params.extract!(
         :is_gift, :price_id, :wallet_type, :perceived_free_trial_duration, :accepted_offer,
         :cart_items, :variants, :bundle_products, :custom_fields, :tip_cents, :call_start_time,
-        :pay_in_installments
+        :pay_in_installments, :force_new_subscription
       )
       {
         purchase: purchase_params,
