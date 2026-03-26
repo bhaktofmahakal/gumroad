@@ -238,7 +238,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ci_node_total: [55]
+        ci_node_total: [65]
         ci_node_index:
           [
             0,
@@ -296,6 +296,16 @@ jobs:
             52,
             53,
             54,
+            55,
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63,
+            64,
           ]
     steps:
       - uses: actions/checkout@v4
