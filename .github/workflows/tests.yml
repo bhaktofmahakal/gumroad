@@ -191,7 +191,7 @@ jobs:
             docker run --rm --entrypoint="" --network ${{ env.COMPOSE_PROJECT_NAME }}_default \
               -e RAILS_ENV=test \
               $WEB_REPO:test-${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }} \
-              bundle exec rake db:setup
+              bundle exec rake db:prepare
         env:
           WEB_REPO: quay.io/gumroad/web
 
@@ -357,7 +357,7 @@ jobs:
             docker run --rm --entrypoint="" --network ${{ env.COMPOSE_PROJECT_NAME }}_default \
               -e RAILS_ENV=test \
               $WEB_REPO:test-${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }} \
-              bundle exec rake db:setup
+              bundle exec rake db:prepare
         env:
           WEB_REPO: quay.io/gumroad/web
 
