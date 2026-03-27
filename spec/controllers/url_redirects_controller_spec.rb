@@ -922,7 +922,7 @@ describe UrlRedirectsController, inertia: true do
       expect(folder_events.first.folder_id).to eq(folder_id)
     end
 
-    it "triggers archive regeneration and returns 404 when the S3 object is missing" do
+    it "triggers archive regeneration and redirects to download page when the S3 object is missing" do
       entity_archive = @url_redirect.product_files_archives.new(product_files_archive_state: "ready")
       entity_archive.set_url_if_not_present
       entity_archive.save!
@@ -934,8 +934,11 @@ describe UrlRedirectsController, inertia: true do
       allow(entity_archive).to receive(:generate_zip_archive!)
       allow(@url_redirect).to receive(:entity_archive).and_return(entity_archive)
 
-      expect { get :download_archive, format: :html, params: { id: @token } }.to raise_error(ActionController::RoutingError)
+      get :download_archive, format: :html, params: { id: @token }
 
+      expect(response).to redirect_to(@url_redirect.download_page_url)
+      expect(flash[:warning]).to eq("We are preparing the file for download. Please try again shortly.")
+      expect(entity_archive.reload.product_files_archive_state).to eq("in_progress")
       expect(entity_archive).to have_received(:generate_zip_archive!)
     end
   end
