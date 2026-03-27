@@ -4,18 +4,19 @@ require "spec_helper"
 require "net/http"
 
 describe "Files multipart upload" do
+  let(:user) { create(:user) }
+  let(:app) { create(:oauth_application, owner: create(:user)) }
+  let(:token) { create("doorkeeper/access_token", application: app, resource_owner_id: user.id, scopes: "edit_products") }
+
   before do
     host! "test.gumroad.com"
-    @user = create(:user)
-    @app = create(:oauth_application, owner: create(:user))
-    @token = create("doorkeeper/access_token", application: @app, resource_owner_id: @user.id, scopes: "edit_products")
   end
 
   it "completes a real multipart upload to S3 via presigned part URLs" do
     content = "hello multipart upload"
 
     post "/api/v2/files/presign",
-         params: { access_token: @token.token, filename: "hello.txt", file_size: content.bytesize }
+         params: { access_token: token.token, filename: "hello.txt", file_size: content.bytesize }
 
     expect(response.parsed_body["success"]).to be true
     upload_id = response.parsed_body["upload_id"]
@@ -36,7 +37,7 @@ describe "Files multipart upload" do
 
     post "/api/v2/files/complete",
          params: {
-           access_token: @token.token,
+           access_token: token.token,
            upload_id:,
            key:,
            parts: [{ part_number: 1, etag: }]
@@ -56,7 +57,7 @@ describe "Files multipart upload" do
     content = "x" * (part_size + 1) # 2 parts: 5 MB then 1 byte
 
     post "/api/v2/files/presign",
-         params: { access_token: @token.token, filename: "multi.bin", file_size: content.bytesize }
+         params: { access_token: token.token, filename: "multi.bin", file_size: content.bytesize }
 
     expect(response.parsed_body["success"]).to be true
     parts_meta = response.parsed_body["parts"]
@@ -79,7 +80,7 @@ describe "Files multipart upload" do
     end
 
     post "/api/v2/files/complete",
-         params: { access_token: @token.token, upload_id:, key:, parts: completed_parts }
+         params: { access_token: token.token, upload_id:, key:, parts: completed_parts }
 
     body = response.parsed_body
     expect(body["success"]).to be true
@@ -91,7 +92,7 @@ describe "Files multipart upload" do
     content = "hello multipart upload"
 
     post "/api/v2/files/presign",
-         params: { access_token: @token.token, filename: "bad.txt", file_size: content.bytesize }
+         params: { access_token: token.token, filename: "bad.txt", file_size: content.bytesize }
 
     upload_id = response.parsed_body["upload_id"]
     key = response.parsed_body["key"]
@@ -106,7 +107,7 @@ describe "Files multipart upload" do
 
     post "/api/v2/files/complete",
          params: {
-           access_token: @token.token,
+           access_token: token.token,
            upload_id:,
            key:,
            parts: [{ part_number: 1, etag: '"00000000000000000000000000000000"' }]
