@@ -13,7 +13,7 @@ class User::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
   def stripe_connect
     auth = request.env["omniauth.auth"]
-    referer = request.env["omniauth.params"]["referer"].presence || settings_payments_path
+    referer = request.env["omniauth.params"]["referer"]
 
     Rails.logger.info("Stripe Connect referer: #{referer}, parameters: #{LogRedactor.redact(auth)}")
 
@@ -26,7 +26,7 @@ class User::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
     unless StripeMerchantAccountManager::COUNTRIES_SUPPORTED_BY_STRIPE_CONNECT.include?(stripe_account.country)
       flash[:alert] = "Sorry, Stripe Connect is not supported in #{Compliance::Countries.mapping[stripe_account.country]} yet."
-      return safe_redirect_to referer
+      return safe_redirect_to(referer || settings_payments_path)
     end
 
     if logged_in_user.blank?
@@ -40,7 +40,7 @@ class User::OmniauthCallbacksController < Devise::OmniauthCallbacksController
         if user.nil?
           if Feature.active?(:disable_stripe_signup)
             flash[:alert] = "Sorry, we could not find an account associated with that Stripe account."
-            return safe_redirect_to referer
+            return safe_redirect_to(referer || settings_payments_path)
           else
             user = User.find_or_create_for_stripe_connect_account(auth)
           end
@@ -49,13 +49,13 @@ class User::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
       if user.nil?
         flash[:alert] = "An account already exists with this email."
-        return safe_redirect_to referer
+        return safe_redirect_to(referer || settings_payments_path)
       elsif user.is_team_member?
         flash[:alert] = "You're an admin, you can't login with Stripe."
-        return safe_redirect_to referer
+        return safe_redirect_to(referer || settings_payments_path)
       elsif user.deleted?
         flash[:alert] = "You cannot log in because your account was permanently deleted. Please sign up for a new account to start selling!"
-        return safe_redirect_to referer
+        return safe_redirect_to(referer || settings_payments_path)
       end
 
       session[:stripe_connect_data] = {
