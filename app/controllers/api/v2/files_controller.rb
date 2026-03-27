@@ -4,9 +4,9 @@ class Api::V2::FilesController < Api::V2::BaseController
   before_action { doorkeeper_authorize! :edit_products }
 
   PRESIGNED_URL_EXPIRY_SECONDS = 900
-  PART_SIZE = 100 * 1024 * 1024
+  PART_SIZE = 100.megabytes
   MAX_FILE_SIZE_GB = 20 # matching the web uploader limit
-  MAX_FILE_SIZE = MAX_FILE_SIZE_GB * 1024 * 1024 * 1024
+  MAX_FILE_SIZE = MAX_FILE_SIZE_GB.gigabytes
 
   def presign
     filename = ActiveStorage::Filename.new(params[:filename].to_s).sanitized
