@@ -931,15 +931,13 @@ describe UrlRedirectsController, inertia: true do
         receive(:signed_download_url_for_s3_key_and_filename)
           .with(entity_archive.s3_key, entity_archive.s3_filename)
           .and_raise(Aws::S3::Errors::NotFound.new(nil, "Not Found")))
-      allow(entity_archive).to receive(:generate_zip_archive!)
-      allow(@url_redirect).to receive(:entity_archive).and_return(entity_archive)
+      expect_any_instance_of(ProductFilesArchive).to receive(:generate_zip_archive!)
 
       get :download_archive, format: :html, params: { id: @token }
 
       expect(response).to redirect_to(@url_redirect.download_page_url)
       expect(flash[:warning]).to eq("We are preparing the file for download. Please try again shortly.")
       expect(entity_archive.reload.product_files_archive_state).to eq("in_progress")
-      expect(entity_archive).to have_received(:generate_zip_archive!)
     end
   end
 
