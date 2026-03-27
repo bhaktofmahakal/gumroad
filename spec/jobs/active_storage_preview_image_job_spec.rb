@@ -6,9 +6,9 @@ describe ActiveStorage::PreviewImageJob do
   it "discards the job when ActiveStorage::PreviewError is raised" do
     allow_any_instance_of(described_class).to receive(:perform).and_raise(ActiveStorage::PreviewError, "ffmpeg failed (status 1)")
 
-    expect {
+    expect do
       described_class.perform_now("fake_blob_id")
-    }.not_to raise_error
+    end.not_to raise_error
   end
 
   it "logs a warning when discarding due to PreviewError" do
