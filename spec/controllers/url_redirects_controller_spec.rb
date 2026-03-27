@@ -921,6 +921,23 @@ describe UrlRedirectsController, inertia: true do
       expect(folder_events.count).to eq(1)
       expect(folder_events.first.folder_id).to eq(folder_id)
     end
+
+    it "triggers archive regeneration and returns 404 when the S3 object is missing" do
+      entity_archive = @url_redirect.product_files_archives.new(product_files_archive_state: "ready")
+      entity_archive.set_url_if_not_present
+      entity_archive.save!
+
+      allow(controller).to(
+        receive(:signed_download_url_for_s3_key_and_filename)
+          .with(entity_archive.s3_key, entity_archive.s3_filename)
+          .and_raise(Aws::S3::Errors::NotFound.new(nil, "Not Found")))
+      allow(entity_archive).to receive(:generate_zip_archive!)
+      allow(@url_redirect).to receive(:entity_archive).and_return(entity_archive)
+
+      expect { get :download_archive, format: :html, params: { id: @token } }.to raise_error(ActionController::RoutingError)
+
+      expect(entity_archive).to have_received(:generate_zip_archive!)
+    end
   end
 
   describe "GET download_product_files" do
