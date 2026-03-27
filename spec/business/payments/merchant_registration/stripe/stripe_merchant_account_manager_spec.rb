@@ -9131,6 +9131,18 @@ describe StripeMerchantAccountManager, :vcr do
           end.to have_enqueued_mail(ContactingCreatorMailer, :invalid_bank_account).with(user.id)
         end
       end
+
+      describe "bank not found for routing number" do
+        before do
+          expect(Stripe::Account).to receive(:update).and_raise(Stripe::InvalidRequestError.new("We couldn't find the bank for that", "bank_account"))
+        end
+
+        it "emails the creator" do
+          expect do
+            subject.update_bank_account(user, passphrase: "1234")
+          end.to have_enqueued_mail(ContactingCreatorMailer, :invalid_bank_account).with(user.id)
+        end
+      end
     end
 
     describe "all info provided previously, bank account not changed" do
