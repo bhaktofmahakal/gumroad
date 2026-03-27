@@ -183,7 +183,7 @@ class Payouts
     )
     payment.save!
     payment_errors = payout_processor.prepare_payment_and_set_amount(payment, balances)
-    payment.mark_processing!
+    payment.mark_processing! if payment_errors.blank?
     [payment, payment_errors]
   end
 

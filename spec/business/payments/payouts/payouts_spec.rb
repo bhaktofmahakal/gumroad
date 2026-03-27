@@ -692,4 +692,38 @@ describe Payouts do
       end
     end
   end
+
+  describe ".create_payment" do
+    let(:seller) { create(:user_with_compliance_info, payment_address: "seller@example.com") }
+    let(:merchant_account) { create(:merchant_account, user: seller) }
+    let(:payout_date) { Date.today - 1 }
+
+    before do
+      create(:balance, user: seller, merchant_account:, date: payout_date - 3, amount_cents: 1000_00)
+      allow(StripePayoutProcessor).to receive(:is_balance_payable).and_return(true)
+    end
+
+    context "when prepare_payment_and_set_amount fails and marks the payment as failed" do
+      it "does not raise an InvalidTransition error" do
+        allow(StripePayoutProcessor).to receive(:prepare_payment_and_set_amount) do |payment, _balances|
+          payment.mark_failed!
+          ["Something went wrong"]
+        end
+
+        payment, errors = described_class.create_payment(payout_date, PayoutProcessorType::STRIPE, seller)
+        expect(errors).to eq(["Something went wrong"])
+        expect(payment.state).to eq("failed")
+      end
+    end
+
+    context "when prepare_payment_and_set_amount succeeds" do
+      it "marks the payment as processing" do
+        allow(StripePayoutProcessor).to receive(:prepare_payment_and_set_amount).and_return([])
+
+        payment, errors = described_class.create_payment(payout_date, PayoutProcessorType::STRIPE, seller)
+        expect(errors).to eq([])
+        expect(payment.state).to eq("processing")
+      end
+    end
+  end
 end
