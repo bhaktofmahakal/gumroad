@@ -116,5 +116,12 @@ describe Api::Internal::Installments::RecipientCountsController do
       expect(response).to be_successful
       expect(response.parsed_body).to eq("recipient_count" => 1, "audience_count" => 5)
     end
+
+    it "returns a 408 error when the query times out" do
+      allow(WithMaxExecutionTime).to receive(:timeout_queries).and_raise(WithMaxExecutionTime::QueryTimeoutError)
+      get :show, params: { installment_type: "audience" }
+      expect(response).to have_http_status(:request_timeout)
+      expect(response.parsed_body).to eq("success" => false, "error" => "recipient_count_timeout")
+    end
   end
 end

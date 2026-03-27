@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Api::Internal::Installments::RecipientCountsController < Api::Internal::BaseController
+  QUERY_TIMEOUT_SECONDS = 30
+
   before_action :authenticate_user!
   after_action :verify_authorized
 
@@ -23,9 +25,13 @@ class Api::Internal::Installments::RecipientCountsController < Api::Internal::Ba
     installment = Installment.new(permitted_params)
     installment.seller = current_seller
 
-    render json: {
-      audience_count: current_seller.audience_members.count,
-      recipient_count: installment.audience_members_count
-    }
+    WithMaxExecutionTime.timeout_queries(seconds: QUERY_TIMEOUT_SECONDS) do
+      render json: {
+        audience_count: current_seller.audience_members.count,
+        recipient_count: installment.audience_members_count
+      }
+    end
+  rescue WithMaxExecutionTime::QueryTimeoutError
+    render json: { success: false, error: "recipient_count_timeout" }, status: :request_timeout
   end
 end
