@@ -94,7 +94,9 @@ module User::SocialGoogle
       # on google's side
       # https://support.google.com/accounts/answer/19870?hl=en
       if EmailFormatValidator.valid?(email) && user.email&.downcase != email.downcase
-        user.email = email
+        if user.new_record? || User.by_email(email).where.not(id: user.id).empty?
+          user.email = email
+        end
       end
 
       # Set user's avatar if they don't have one

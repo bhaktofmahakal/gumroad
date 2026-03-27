@@ -45,6 +45,22 @@ describe User::SocialGoogle do
       expect(createdUser.reload.google_uid).to eq(@dataCopy2["uid"])
     end
 
+    it "signs in the user without updating email when Google email conflicts with another account" do
+      existing_user = create(:user, email: "taken@example.com")
+      oauth_user = create(:user, email: "original@example.com", google_uid: "conflict_test_uid")
+
+      conflict_data = @data.deep_dup
+      conflict_data["uid"] = "conflict_test_uid"
+      conflict_data["info"]["email"] = "taken@example.com"
+      conflict_data["extra"]["raw_info"]["email"] = "taken@example.com"
+
+      result = User.find_or_create_for_google_oauth2(conflict_data)
+
+      expect(result).to eq(oauth_user)
+      expect(oauth_user.reload.email).to eq("original@example.com")
+      expect(existing_user.reload.email).to eq("taken@example.com")
+    end
+
     it "creates user with sanitized name when name contains colons" do
       @data_with_colon = @data.deep_dup
       @data_with_colon["uid"] = "unique_colon_test_uid"
@@ -98,6 +114,27 @@ describe User::SocialGoogle do
         @user = create(:user, email: "spongebob@example.com")
 
         expect { User.query_google(@user, @data) }.to change { @user.reload.email }.from("spongebob@example.com").to(@data["info"]["email"])
+      end
+
+      context "when the Google email is already used by another account" do
+        before do
+          @existing_user = create(:user, email: @data["info"]["email"])
+          @user = create(:user, email: "other@example.com", google_uid: @data["uid"])
+        end
+
+        it "does not update the email" do
+          expect { User.query_google(@user, @data) }.not_to change { @user.reload.email }
+        end
+
+        it "does not raise an error" do
+          expect { User.query_google(@user, @data) }.not_to raise_error
+        end
+
+        it "still signs the user in successfully" do
+          result = User.query_google(@user, @data)
+          expect(result).to eq(@user)
+          expect(@user.reload.email).to eq("other@example.com")
+        end
       end
 
       context "when the email already exists in a different case" do
