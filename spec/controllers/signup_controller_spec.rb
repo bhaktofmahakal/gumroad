@@ -117,9 +117,9 @@ describe SignupController, type: :controller, inertia: true do
           subdomain_url = "https://creator.#{ROOT_DOMAIN}/l/product"
           allow(controller).to receive(:login_path_for).and_return(subdomain_url)
 
-          expect {
+          expect do
             post "create", params: { user: { email: @user.email, password: "password" } }
-          }.not_to raise_error
+          end.not_to raise_error
 
           expect(response).to redirect_to(subdomain_url)
           expect(controller.user_signed_in?).to eq true
