@@ -635,5 +635,16 @@ describe "Product::Searchable - Search scenarios" do
         expect(Link.search(Link.search_options(user_id: [product1.user_id, product2.user_id])).records.map(&:id)).to eq([product1.id, product2.id])
       end
     end
+
+    describe "search_options with string params" do
+      it "does not raise TypeError when size param is a string" do
+        expect { Link.search_options(size: "9") }.not_to raise_error
+      end
+
+      it "converts string size param to integer in the search body" do
+        options = Link.search_options(size: "5")
+        expect(options.to_hash[:size]).to eq(5)
+      end
+    end
   end
 end
