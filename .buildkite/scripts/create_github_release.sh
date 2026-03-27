@@ -17,37 +17,11 @@ if ! command -v gh &> /dev/null; then
   rm -rf /tmp/gh.tar.gz "/tmp/gh_${GH_VERSION}_linux_amd64"
 fi
 
-# Generate a short-lived GitHub App installation token
-# Requires GH_APP_ID and GH_APP_PRIVATE_KEY environment variables in Buildkite
-generate_jwt() {
-  local app_id="$1"
-  local private_key="$2"
-  local now=$(date +%s)
-  local iat=$((now - 60))
-  local exp=$((now + 600))
-
-  local header=$(echo -n '{"alg":"RS256","typ":"JWT"}' | openssl base64 -e -A | tr '+/' '-_' | tr -d '=')
-  local payload=$(echo -n "{\"iat\":${iat},\"exp\":${exp},\"iss\":\"${app_id}\"}" | openssl base64 -e -A | tr '+/' '-_' | tr -d '=')
-  local unsigned="${header}.${payload}"
-  local signature=$(echo -n "$unsigned" | openssl dgst -sha256 -sign <(echo "$private_key") | openssl base64 -e -A | tr '+/' '-_' | tr -d '=')
-
-  echo "${unsigned}.${signature}"
-}
-
-logger "Generating GitHub App installation token"
-JWT=$(generate_jwt "$GH_APP_ID" "$GH_APP_PRIVATE_KEY")
-
-INSTALLATION_ID=$(curl -fsSL \
-  -H "Authorization: Bearer ${JWT}" \
-  -H "Accept: application/vnd.github+json" \
-  "https://api.github.com/repos/antiwork/gumroad/installation" | ruby -e "require 'json'; puts JSON.parse(STDIN.read)['id']")
-
-GH_TOKEN=$(curl -fsSL \
-  -X POST \
-  -H "Authorization: Bearer ${JWT}" \
-  -H "Accept: application/vnd.github+json" \
-  "https://api.github.com/app/installations/${INSTALLATION_ID}/access_tokens" | ruby -e "require 'json'; puts JSON.parse(STDIN.read)['token']")
-
+# Requires GH_TOKEN environment variable in Buildkite (PAT from gumroad-buildkite user)
+if [ -z "$GH_TOKEN" ]; then
+  logger "Error: GH_TOKEN is not set"
+  exit 1
+fi
 export GH_TOKEN
 
 COMMIT_SHA=${BUILDKITE_COMMIT}
