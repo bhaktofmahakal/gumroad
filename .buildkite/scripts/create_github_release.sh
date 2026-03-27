@@ -34,14 +34,16 @@ logger "Creating GitHub Release ${VERSION_TAG} at commit ${COMMIT_SHA}"
 git tag "$VERSION_TAG" "$COMMIT_SHA"
 git push origin "$VERSION_TAG"
 
-# Build the gh release create command
-RELEASE_CMD="gh release create ${VERSION_TAG} --target ${COMMIT_SHA} --generate-notes"
-
+# Create the GitHub Release
 if [ -n "$PREVIOUS_TAG" ]; then
   logger "Generating changelog from ${PREVIOUS_TAG} to ${VERSION_TAG}"
-  RELEASE_CMD+=" --notes-start-tag ${PREVIOUS_TAG}"
-fi
+  gh release create "$VERSION_TAG" --target "$COMMIT_SHA" --generate-notes --notes-start-tag "$PREVIOUS_TAG"
+else
+  logger "No previous release found, creating initial release for commit ${COMMIT_SHA}"
+  COMMIT_TITLE=$(git log -1 --pretty=format:'%s' "$COMMIT_SHA")
+  gh release create "$VERSION_TAG" --target "$COMMIT_SHA" --notes "Initial release.
 
-eval "$RELEASE_CMD"
+* ${COMMIT_TITLE} (${COMMIT_SHA:0:12})"
+fi
 
 logger "GitHub Release ${VERSION_TAG} created successfully"
