@@ -69,16 +69,23 @@ class Api::V2::SalesController < Api::V2::BaseController
       where_page_data = ["created_at <= ? and id < ?", last_purchase_created_at, last_purchase_id]
     end
 
-    paginated_sales = filter_sales(start_date:, end_date:, email:, product_id:, purchase_id:)
-    subquery_filters = ->(query) {
-      query.where(seller_id: current_resource_owner.id).where(where_page_data).order(created_at: :desc, id: :desc).limit(RESULTS_PER_PAGE + 1)
-    }
-    paginated_sales = paginated_sales.for_sales_api_ordered_by_date(subquery_filters)
-    paginated_sales = paginated_sales.limit(RESULTS_PER_PAGE + 1).to_a
-    has_next_page = paginated_sales.size > RESULTS_PER_PAGE
-    paginated_sales = paginated_sales.first(RESULTS_PER_PAGE)
-    additional_response = has_next_page ? pagination_info(paginated_sales.last) : {}
-    success_with_object(:sales, paginated_sales.as_json(version: 2), additional_response)
+    begin
+      timeout_s = ($redis.get(RedisKey.api_v2_sales_query_timeout) || 15).to_i
+      WithMaxExecutionTime.timeout_queries(seconds: timeout_s) do
+        paginated_sales = filter_sales(start_date:, end_date:, email:, product_id:, purchase_id:)
+        subquery_filters = ->(query) {
+          query.where(seller_id: current_resource_owner.id).where(where_page_data).order(created_at: :desc, id: :desc).limit(RESULTS_PER_PAGE + 1)
+        }
+        paginated_sales = paginated_sales.for_sales_api_ordered_by_date(subquery_filters)
+        paginated_sales = paginated_sales.limit(RESULTS_PER_PAGE + 1).to_a
+        has_next_page = paginated_sales.size > RESULTS_PER_PAGE
+        paginated_sales = paginated_sales.first(RESULTS_PER_PAGE)
+        additional_response = has_next_page ? pagination_info(paginated_sales.last) : {}
+        success_with_object(:sales, paginated_sales.as_json(version: 2), additional_response)
+      end
+    rescue WithMaxExecutionTime::QueryTimeoutError
+      render json: { success: false, message: "Request timed out. Please narrow your query using filters like 'product_id', 'after', or 'before'." }, status: :service_unavailable
+    end
   end
 
   def show
