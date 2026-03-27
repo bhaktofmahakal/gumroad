@@ -316,6 +316,18 @@ describe Api::Mobile::PurchasesController do
                                              user_id: @purchaser.external_id }.as_json(api_scopes: ["mobile_api"]))
       end
     end
+
+    it "limits non-paginated results to 100 purchases" do
+      products = create_list(:product, 2, user: @user)
+      products.each do |product|
+        55.times { create(:free_purchase, link: product, purchaser: @purchaser, seller: @user) }
+      end
+
+      get :index, params: @params
+
+      expect(response.parsed_body["success"]).to eq(true)
+      expect(response.parsed_body["products"].length).to eq(100)
+    end
   end
 
   describe "POST archive" do

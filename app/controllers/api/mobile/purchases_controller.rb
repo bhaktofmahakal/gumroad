@@ -12,9 +12,10 @@ class Api::Mobile::PurchasesController < Api::Mobile::BaseController
         purchases.page_with_kaminari(params[:page]).per(params[:per_page])
       )
     else
-      media_locations_scope = MediaLocation.where(product_id: purchases.pluck(:link_id))
-      cache [purchases, media_locations_scope], expires_in: 10.minutes do
-        purchases_to_json(purchases)
+      limited_purchases = purchases.limit(100)
+      media_locations_scope = MediaLocation.where(product_id: limited_purchases.pluck(:link_id))
+      cache [limited_purchases, media_locations_scope], expires_in: 10.minutes do
+        purchases_to_json(limited_purchases)
       rescue => e
         # Cache empty array for requests that timeout to reduce the load on database.
         # TODO: Remove this once we fix the bottleneck with the purchases_json generation
