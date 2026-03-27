@@ -4914,6 +4914,20 @@ describe Purchase, :vcr do
         expect(TranscodeVideoForStreamingWorker).to have_enqueued_sidekiq_job(product_file.id, product_file.class.name)
         expect(@product.reload.transcode_videos_on_purchase?).to eq false
       end
+
+      context "when the product has an expired default offer code" do
+        before do
+          offer_code = create(:offer_code, products: [@product], user: @product.user)
+          @product.update!(default_offer_code: offer_code)
+          offer_code.update_column(:expires_at, 1.day.ago)
+        end
+
+        it "succeeds without raising a validation error" do
+          expect { @purchase.mark_successful! }.not_to raise_error
+
+          expect(@product.reload.transcode_videos_on_purchase?).to eq false
+        end
+      end
     end
   end
 

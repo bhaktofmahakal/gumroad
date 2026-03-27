@@ -2682,7 +2682,7 @@ class Purchase < ApplicationRecord
       # Videos uploaded in the future would be automatically transcoded since the product would contain at least one
       # successful purchase. We can disable transcode on purchase to avoid unnecessary transcode attempts.
       link.transcode_videos_on_purchase = false
-      link.save!
+      link.save!(validate: false)
     end
 
     def process_without_charging!
