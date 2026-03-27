@@ -5,8 +5,8 @@ require "net/http"
 
 describe "Files multipart upload" do
   let(:user) { create(:user) }
-  let(:app) { create(:oauth_application, owner: create(:user)) }
-  let(:token) { create("doorkeeper/access_token", application: app, resource_owner_id: user.id, scopes: "edit_products") }
+  let(:oauth_application) { create(:oauth_application, owner: create(:user)) }
+  let(:token) { create("doorkeeper/access_token", application: oauth_application, resource_owner_id: user.id, scopes: "edit_products") }
 
   before do
     host! "test.gumroad.com"
