@@ -266,8 +266,25 @@ describe AssetPreview, :vcr do
         expect(asset_preview.display_height).to eq(210)
       end
 
+      describe "#retina_variant_processed?" do
+        it "returns false before variant is processed" do
+          expect(asset_preview.retina_variant_processed?).to eq(false)
+        end
+
+        it "returns true after variant is processed" do
+          asset_preview.retina_variant
+          expect(asset_preview.retina_variant_processed?).to eq(true)
+        end
+      end
+
       describe "#url" do
-        it "returns retina variant" do
+        it "returns original file URL when retina variant is not yet processed" do
+          expect(asset_preview.url).to match(asset_preview.file.key)
+        end
+
+        it "returns retina variant URL when variant has been processed" do
+          asset_preview.retina_variant # pre-process the variant
+          Rails.cache.clear
           expect(asset_preview.url).to match(asset_preview.retina_variant.key)
         end
 
@@ -291,6 +308,20 @@ describe AssetPreview, :vcr do
   end
 
   describe "callbacks" do
+    describe "#enqueue_retina_variant_processing" do
+      it "enqueues a background job on create for image previews" do
+        expect do
+          create(:asset_preview)
+        end.to change(PreprocessAssetPreviewVariantJob.jobs, :size).by(1)
+      end
+
+      it "does not enqueue a background job for non-image previews" do
+        expect do
+          create(:asset_preview_mov)
+        end.not_to change(PreprocessAssetPreviewVariantJob.jobs, :size)
+      end
+    end
+
     describe "#reset_moderated_by_iffy_flag" do
       let(:product) { create(:product, moderated_by_iffy: true) }
       let(:asset_preview) { create(:asset_preview, link: product) }

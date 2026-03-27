@@ -33,6 +33,12 @@ describe AssetPreviewsController do
       end.to change { product.asset_previews.alive.count }.by(1)
     end
 
+    it "enqueues a background job to process the retina variant" do
+      expect do
+        post(:create, params: { link_id: product.unique_permalink, asset_preview: { url: s3_url }, format: :json })
+      end.to change(PreprocessAssetPreviewVariantJob.jobs, :size).by(1)
+    end
+
     it "doesn't add a preview if there are too many previews" do
       stub_const("Link::MAX_PREVIEW_COUNT", 1)
       allow_any_instance_of(AssetPreview).to receive(:analyze_file).and_return(nil)

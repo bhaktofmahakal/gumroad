@@ -9,6 +9,7 @@ class AssetPreview < ApplicationRecord
   RETINA_DISPLAY_WIDTH = (DEFAULT_DISPLAY_WIDTH * 1.5).to_i
 
   after_commit :invalidate_product_cache
+  after_commit :enqueue_retina_variant_processing, on: :create
   after_create :reset_moderated_by_iffy_flag
 
   # Update updated_at of product to regenerate the sitemap in RefreshSitemapMonthlyWorker
@@ -84,6 +85,12 @@ class AssetPreview < ApplicationRecord
     file.variant(resize_to_limit: [retina_width, nil]).processed
   end
 
+  def retina_variant_processed?
+    return false unless file.attached?
+    variation = ActiveStorage::Variation.wrap(resize_to_limit: [retina_width, nil])
+    file.blob.variant_records.exists?(variation_digest: variation.digest)
+  end
+
   def display_type
     return "unsplash" if unsplash_url
     return "oembed" if oembed
@@ -149,6 +156,10 @@ class AssetPreview < ApplicationRecord
 
     style ||= default_style
 
+    if style == :retina && !retina_variant_processed?
+      return file.url
+    end
+
     Rails.cache.fetch("attachment_#{file.id}_#{style}_url") do
       if style == :retina
         retina_variant.url
@@ -204,6 +215,10 @@ class AssetPreview < ApplicationRecord
   end
 
   private
+    def enqueue_retina_variant_processing
+      PreprocessAssetPreviewVariantJob.perform_async(id) if should_post_process?
+    end
+
     def set_position
       previous = link.asset_previews.in_order.last
       if previous
