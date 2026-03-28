@@ -4,7 +4,7 @@ require "spec_helper"
 
 describe Checkout::Upsells::ProductsController do
   let(:seller) { create(:named_seller) }
-  let!(:product1) { create(:product, :recommendable, user: seller, name: "Product 1", price_cents: 1000, price_currency_type: "usd", native_type: "digital") }
+  let!(:product1) { create(:product, user: seller, name: "Product 1", price_cents: 1000, price_currency_type: "usd", native_type: "digital") }
   let!(:product2) { create(:product, user: seller, name: "Product 2", price_cents: 2000, price_currency_type: "eur", native_type: "physical") }
   let!(:archived_product) { create(:product, user: seller, archived: true) }
   let!(:versioned_product) { create(:product_with_digital_versions_with_price_difference_cents, user: seller, name: "Versioned Product", price_cents: 3000) }
@@ -24,8 +24,8 @@ describe Checkout::Upsells::ProductsController do
             permalink: product1.unique_permalink,
             price_cents: 1000,
             currency_code: "usd",
-            review_count: 1,
-            average_rating: 5.0,
+            review_count: 0,
+            average_rating: 0.0,
             native_type: "digital",
             thumbnail_url: nil,
             options: []
@@ -79,6 +79,21 @@ describe Checkout::Upsells::ProductsController do
       )
     end
 
+    it "returns quantity_left for variants with max_purchase_count" do
+      variant = versioned_product.alive_variants.first
+      variant.update!(max_purchase_count: 10)
+
+      purchase = create(:free_purchase, link: versioned_product, quantity: 3)
+      purchase.variant_attributes << variant
+
+      sign_in seller
+      get :index
+
+      versioned_response = response.parsed_body.map(&:deep_symbolize_keys).find { |p| p[:id] == versioned_product.external_id }
+      first_option = versioned_response[:options].find { |o| o[:id] == variant.external_id }
+      expect(first_option[:quantity_left]).to eq(7)
+    end
+
     context "with custom domain" do
       before do
         @request.host = "example.com"
@@ -97,8 +112,8 @@ describe Checkout::Upsells::ProductsController do
               permalink: product1.unique_permalink,
               price_cents: 1000,
               currency_code: "usd",
-              review_count: 1,
-              average_rating: 5.0,
+              review_count: 0,
+              average_rating: 0.0,
               native_type: "digital",
               thumbnail_url: nil,
               options: []
@@ -167,8 +182,8 @@ describe Checkout::Upsells::ProductsController do
           permalink: product1.unique_permalink,
           price_cents: 1000,
           currency_code: "usd",
-          review_count: 1,
-          average_rating: 5.0,
+          review_count: 0,
+          average_rating: 0.0,
           native_type: "digital",
           thumbnail_url: nil,
           options: []

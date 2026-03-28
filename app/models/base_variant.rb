@@ -140,8 +140,14 @@ class BaseVariant < ApplicationRecord
     }
   end
 
+  attr_writer :preloaded_sales_count_for_inventory
+
   def sales_count_for_inventory
-    purchases.counts_towards_inventory.sum(:quantity)
+    if instance_variable_defined?(:@preloaded_sales_count_for_inventory)
+      @preloaded_sales_count_for_inventory
+    else
+      purchases.counts_towards_inventory.sum(:quantity)
+    end
   end
 
   def is_downloadable?

@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
 class Checkout::Upsells::ProductPresenter
-  def initialize(product)
+  def initialize(product, preloaded_options: false)
     @product = product
+    @preloaded_options = preloaded_options
   end
 
   def product_props
@@ -16,7 +17,7 @@ class Checkout::Upsells::ProductPresenter
       average_rating: product.average_rating,
       native_type: product.native_type,
       thumbnail_url: product.thumbnail_or_cover_url,
-      options: product.options
+      options: @preloaded_options ? product.options_from_preloaded : product.options
     }
   end
 

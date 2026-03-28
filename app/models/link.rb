@@ -620,6 +620,18 @@ class Link < ApplicationRecord
     end
   end
 
+  def options_from_preloaded
+    if skus_enabled
+      skus.select { |s| !s.is_default_sku? && s.alive? }.map(&:to_option_for_product)
+    elsif (first_category = variant_categories.select(&:alive?).first)
+      variants.select { |v| v.variant_category_id == first_category.id && v.alive? }
+              .sort_by(&:created_at)
+              .map(&:to_option)
+    else
+      []
+    end
+  end
+
   def variants_or_skus
     skus_enabled? ? skus.not_is_default_sku.alive : alive_variants
   end
