@@ -316,6 +316,17 @@ describe Api::Mobile::PurchasesController do
                                              user_id: @purchaser.external_id }.as_json(api_scopes: ["mobile_api"]))
       end
     end
+
+    it "limits results to DEFAULT_MAX_PURCHASES when no pagination params are given" do
+      stub_const("Api::Mobile::PurchasesController::DEFAULT_MAX_PURCHASES", 3)
+      products = 4.times.map { create(:product, user: @user) }
+      products.each { |product| create(:purchase_with_balance, link: product, purchaser: @purchaser, seller: @user) }
+
+      get :index, params: @params
+
+      expect(response.parsed_body["success"]).to be true
+      expect(response.parsed_body["products"].size).to eq(3)
+    end
   end
 
   describe "POST archive" do
