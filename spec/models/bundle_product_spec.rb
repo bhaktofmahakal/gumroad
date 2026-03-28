@@ -178,5 +178,45 @@ describe BundleProduct do
         end
       end
     end
+
+    context "when a bundle product is soft-deleted" do
+      let(:bundle_product) { create(:bundle_product) }
+
+      before do
+        bundle_product.mark_deleted!
+      end
+
+      it "skips validations" do
+        bundle_product.product = create(:product)
+        expect(bundle_product).to be_valid
+      end
+
+      it "allows saving the bundle with soft-deleted bundle products" do
+        bundle_product.bundle.reload
+        expect { bundle_product.bundle.save! }.not_to raise_error
+      end
+    end
+
+    context "when adding a non-variant product to a bundle with soft-deleted variant products" do
+      let(:seller) { create(:user) }
+      let(:bundle) { create(:product, :bundle, user: seller) }
+      let(:variant_product) { create(:product_with_digital_versions, user: seller) }
+      let(:non_variant_product) { create(:product, user: seller) }
+
+      it "allows adding the non-variant product" do
+        bundle_product_with_variant = create(
+          :bundle_product,
+          bundle: bundle,
+          product: variant_product,
+          variant: variant_product.alive_variants.first
+        )
+        bundle_product_with_variant.mark_deleted!
+
+        new_bundle_product = build(:bundle_product, bundle: bundle, product: non_variant_product, variant: nil)
+        expect(new_bundle_product).to be_valid
+
+        expect { bundle.save! }.not_to raise_error
+      end
+    end
   end
 end

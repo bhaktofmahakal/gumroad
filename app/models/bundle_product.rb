@@ -9,15 +9,15 @@ class BundleProduct < ApplicationRecord
   belongs_to :product, class_name: "Link"
   belongs_to :variant, class_name: "BaseVariant", optional: true
 
-  validate :product_belongs_to_bundle_seller
-  validate :versioned_product_has_variant
-  validate :variant_belongs_to_product
-  validate :product_is_not_bundle
-  validate :product_is_not_subscription
-  validate :product_is_not_call
-  validate :is_not_duplicate
-  validate :bundle_is_bundle_product
-  validate :product_is_eligible_for_installment_plan
+  validate :product_belongs_to_bundle_seller, unless: :deleted?
+  validate :versioned_product_has_variant, unless: :deleted?
+  validate :variant_belongs_to_product, unless: :deleted?
+  validate :product_is_not_bundle, unless: :deleted?
+  validate :product_is_not_subscription, unless: :deleted?
+  validate :product_is_not_call, unless: :deleted?
+  validate :is_not_duplicate, unless: :deleted?
+  validate :bundle_is_bundle_product, unless: :deleted?
+  validate :product_is_eligible_for_installment_plan, unless: :deleted?
 
   attribute :quantity, default: 1
 
