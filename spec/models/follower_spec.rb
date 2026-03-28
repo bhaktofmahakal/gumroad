@@ -287,6 +287,29 @@ RSpec.describe Follower do
       expect(member).to be_nil
     end
 
+    it "handles race condition when two concurrent requests create the same audience member" do
+      follower = create(:follower)
+      existing_member = create(:audience_member, email: follower.email, seller: follower.user)
+
+      call_count = 0
+      original_method = AudienceMember.method(:find_or_initialize_by)
+      allow(AudienceMember).to receive(:find_or_initialize_by).and_wrap_original do |method, **args|
+        call_count += 1
+        if call_count == 1
+          AudienceMember.new(email: args[:email], seller: args[:seller])
+        else
+          original_method.call(**args)
+        end
+      end
+
+      expect do
+        follower.confirm!
+      end.not_to raise_error
+
+      existing_member.reload
+      expect(existing_member.details["follower"]).to eq({ "id" => follower.id, "created_at" => follower.created_at.iso8601 })
+    end
+
     it "recreates audience member when changing email" do
       follower = create(:active_follower)
       old_email = follower.email

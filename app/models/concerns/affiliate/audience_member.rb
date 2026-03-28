@@ -18,6 +18,13 @@ module Affiliate::AudienceMember
     member.details["affiliates"] ||= []
     member.details["affiliates"] << audience_member_details(product_id:)
     member.save!
+  rescue ActiveRecord::RecordNotUnique
+    member = AudienceMember.find_by!(email: affiliate_user.email, seller:)
+    return if member.details["affiliates"]&.any? { _1["id"] == id && _1["product_id"] == product_id }
+
+    member.details["affiliates"] ||= []
+    member.details["affiliates"] << audience_member_details(product_id:)
+    member.save!
   end
 
   def update_audience_member_with_removed_product(product_or_id)
@@ -48,6 +55,13 @@ module Affiliate::AudienceMember
       return if product_affiliates.empty?
 
       member = AudienceMember.find_or_initialize_by(email: affiliate_user.email, seller:)
+      member.details["affiliates"] ||= []
+      product_affiliates.each do
+        member.details["affiliates"] << audience_member_details(product_id: _1.link_id)
+      end
+      member.save!
+    rescue ActiveRecord::RecordNotUnique
+      member = AudienceMember.find_by!(email: affiliate_user.email, seller:)
       member.details["affiliates"] ||= []
       product_affiliates.each do
         member.details["affiliates"] << audience_member_details(product_id: _1.link_id)

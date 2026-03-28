@@ -25,6 +25,10 @@ module Follower::AudienceMember
       member = AudienceMember.find_or_initialize_by(email:, seller: user)
       member.details["follower"] = audience_member_details
       member.save!
+    rescue ActiveRecord::RecordNotUnique
+      member = AudienceMember.find_by!(email:, seller: user)
+      member.details["follower"] = audience_member_details
+      member.save!
     end
 
     def remove_from_audience_member_details(email = attributes["email"])

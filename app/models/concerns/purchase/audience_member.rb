@@ -44,6 +44,12 @@ module Purchase::AudienceMember
     member.details["purchases"] ||= []
     member.details["purchases"] << audience_member_details
     member.save!
+  rescue ActiveRecord::RecordNotUnique
+    member = AudienceMember.find_by!(email:, seller:)
+    return if member.details["purchases"]&.any? { _1["id"] == id }
+    member.details["purchases"] ||= []
+    member.details["purchases"] << audience_member_details
+    member.save!
   end
 
   def remove_from_audience_member_details(email = attributes["email"])

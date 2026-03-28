@@ -5103,6 +5103,31 @@ describe Purchase, :vcr do
       expect(old_member).to be_nil
       expect(new_member).to be_present
     end
+
+    it "handles race condition when two concurrent requests create the same audience member" do
+      purchase = create(:purchase_in_progress)
+      purchase.update_column(:purchase_state, "successful")
+      existing_member = create(:audience_member, email: purchase.email, seller: purchase.seller)
+
+      call_count = 0
+      original_method = AudienceMember.method(:find_or_initialize_by)
+      allow(AudienceMember).to receive(:find_or_initialize_by).and_wrap_original do |method, **args|
+        call_count += 1
+        if call_count == 1
+          AudienceMember.new(email: args[:email], seller: args[:seller])
+        else
+          original_method.call(**args)
+        end
+      end
+
+      expect do
+        purchase.add_to_audience_member_details
+      end.not_to raise_error
+
+      existing_member.reload
+      expect(existing_member.details["purchases"]).to be_present
+      expect(existing_member.details["purchases"].first["id"]).to eq(purchase.id)
+    end
   end
 
   describe "purchasing power parity validations" do

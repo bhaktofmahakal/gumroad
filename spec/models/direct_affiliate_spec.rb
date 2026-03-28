@@ -453,6 +453,31 @@ describe DirectAffiliate do
       end.to raise_error(ActiveRecord::RecordNotFound)
     end
 
+    it "handles race condition when two concurrent requests create the same audience member" do
+      affiliate = create(:direct_affiliate)
+      product = create(:product, user: affiliate.seller)
+      existing_member = create(:audience_member, email: affiliate.affiliate_user.email, seller: affiliate.seller)
+
+      call_count = 0
+      original_method = AudienceMember.method(:find_or_initialize_by)
+      allow(AudienceMember).to receive(:find_or_initialize_by).and_wrap_original do |method, **args|
+        call_count += 1
+        if call_count == 1
+          AudienceMember.new(email: args[:email], seller: args[:seller])
+        else
+          original_method.call(**args)
+        end
+      end
+
+      expect do
+        affiliate.products << product
+      end.not_to raise_error
+
+      existing_member.reload
+      expect(existing_member.details["affiliates"]).to be_present
+      expect(existing_member.details["affiliates"].first["product_id"]).to eq(product.id)
+    end
+
     it "removes the member when the affiliate user unsubscribes from a seller post" do
       affiliate = create(:direct_affiliate)
       product = create(:product, user: affiliate.seller)
