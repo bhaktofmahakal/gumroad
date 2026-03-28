@@ -14,6 +14,51 @@
   <a href="https://gumroad.com">Gumroad</a> is an e-commerce platform that enables creators to sell products directly to consumers. This repository contains the source code for the Gumroad web application.
 </p>
 
+## Fix: Validation error when adding non-variant products to existing bundles
+
+Fixes antiwork/gumroad#4032
+
+### Summary
+
+This PR resolves a validation error caused by soft-deleted `bundle_products` being included in the validation flow when updating bundles.
+
+### Root Cause
+
+When `@bundle.save!` is triggered, ActiveRecord validates all in-memory associated records. Due to unscoped association loading, soft-deleted `bundle_products` were still present and incorrectly influencing validation logic (e.g. variant checks).
+
+### Fix Approach
+
+Instead of bypassing validations, this fix addresses the issue at the **data layer**:
+
+* Only **alive (non-deleted)** `bundle_products` are loaded in `Bundle::UpdateProductsService`
+* Validation logic that queries `bundle_products` is explicitly scoped to `.alive`
+* Existing validation behavior is preserved without introducing global side effects
+
+### Why This Approach
+
+* Maintains integrity of validation layer
+* Avoids skipping or weakening validations
+* Follows Rails best practices (scoped queries over conditional validation bypass)
+* Prevents unintended regressions in other flows
+
+### Edge Cases Covered
+
+* Adding non-variant products to bundles with soft-deleted variant products
+* Re-adding previously removed products
+* Mixed alive and deleted bundle states
+* Bundles with historical product changes
+
+### Notes
+
+This fix ensures correctness within the current service flow. If future changes introduce association caching of deleted records, the association can be explicitly reloaded or scoped prior to validation.
+
+---
+#### https://github.com/bhaktofmahakal/gumroad/pull/1
+
+Happy to iterate if there’s a preferred approach.
+
+
+
 ## Table of Contents
 
 - [Getting Started](#getting-started)
