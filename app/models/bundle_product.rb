@@ -77,7 +77,7 @@ class BundleProduct < ApplicationRecord
     end
 
     def is_not_duplicate
-      if bundle.bundle_products.where(product_id:).where.not(id:).present?
+      if bundle.bundle_products.alive.where(product_id:).where.not(id:).present?
         errors.add(:base, "Product is already in bundle")
       end
     end

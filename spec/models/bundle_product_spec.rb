@@ -178,5 +178,31 @@ describe BundleProduct do
         end
       end
     end
+
+    context "when checking for duplicate products" do
+      let(:bundle) { create(:product, :bundle) }
+      let(:product) { create(:product, user: bundle.user) }
+
+      context "when a soft-deleted bundle_product exists for the same product" do
+        let!(:deleted_bundle_product) do
+          create(:bundle_product, bundle: bundle, product: product).tap(&:mark_deleted!)
+        end
+
+        it "allows creating a new bundle_product for the same product" do
+          new_bundle_product = build(:bundle_product, bundle: bundle, product: product)
+          expect(new_bundle_product).to be_valid
+        end
+      end
+
+      context "when an alive bundle_product exists for the same product" do
+        let!(:existing_bundle_product) { create(:bundle_product, bundle: bundle, product: product) }
+
+        it "prevents creating a duplicate" do
+          new_bundle_product = build(:bundle_product, bundle: bundle, product: product)
+          expect(new_bundle_product).not_to be_valid
+          expect(new_bundle_product.errors.full_messages.first).to eq("Product is already in bundle")
+        end
+      end
+    end
   end
 end
