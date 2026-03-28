@@ -120,8 +120,7 @@ class ProductPresenter::ProductProps
     def cached_sales_count
       return unless product.should_show_sales_count?
 
-      cache_key_digest = Digest::SHA256.hexdigest("#{product.cache_key}-#{product.price_cents}-#{product.sales.order(id: :desc).pick(:id)}")
-      cache_key = "#{SALES_COUNT_CACHE_KEY_REFIX}_#{cache_key_digest}"
+      cache_key = "#{SALES_COUNT_CACHE_KEY_REFIX}_#{product.id}_#{product.price_cents}"
       Rails.cache.fetch(cache_key, expires_in: 1.minute) { product.successful_sales_count }
     end
 

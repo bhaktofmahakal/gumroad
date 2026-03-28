@@ -571,6 +571,10 @@ describe ProductPresenter::ProductProps do
 
       create(:purchase, link: product)
 
+      # The sales count cache key is time-based (1 minute TTL) rather than
+      # purchase-dependent, so we clear the cache to pick up the new count.
+      Rails.cache.clear
+
       expect(presenter.props(seller_custom_domain_url: nil, request:, pundit_user: nil)[:product][:sales_count]).to eq(1)
       expect($redis.hgetall(metrics_key)).to eq("misses" => "2", "hits" => "1")
 

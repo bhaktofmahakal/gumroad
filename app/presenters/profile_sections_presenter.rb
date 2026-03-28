@@ -17,7 +17,7 @@ class ProfileSectionsPresenter
 
     props = {
       currency_code: pundit_user.user&.currency_type || Currency::USD,
-      show_ratings_filter: seller.links.alive.any?(&:display_product_reviews?),
+      show_ratings_filter: seller.links.alive.where(display_product_reviews: true).exists?,
       creator_profile: ProfilePresenter.new(seller:, pundit_user:).creator_profile,
       sections: cached_sections.map do |props|
         section_props(sections.find { _1.external_id == props[:id] }, cached_props: props, request:, pundit_user:, seller_custom_domain_url:)
