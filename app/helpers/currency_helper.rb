@@ -22,7 +22,12 @@ module CurrencyHelper
   end
 
   def string_to_price_cents(currency_type, price_string)
-    (BigDecimal(price_string.to_s.delete(",").presence || 0) * (is_currency_type_single_unit?(currency_type) ? 1 : 100)).round
+    sanitized = price_string.to_s.delete(",")
+    if sanitized.count(".") > 1
+      first_dot = sanitized.index(".")
+      sanitized = sanitized[0..first_dot] + sanitized[(first_dot + 1)..].delete(".")
+    end
+    (BigDecimal(sanitized.presence || 0) * (is_currency_type_single_unit?(currency_type) ? 1 : 100)).round
   end
 
   def query_rate(currency_type)

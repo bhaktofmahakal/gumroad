@@ -43,6 +43,18 @@ describe CurrencyHelper do
       expect(string_to_price_cents(:usd, "1,200")).to eq 120_000
       expect(string_to_price_cents(:usd, "1,200.99")).to eq 120_099
     end
+
+    it "handles multiple decimal points by keeping only the first" do
+      expect(string_to_price_cents(:usd, "50.00.000")).to eq 5000
+      expect(string_to_price_cents(:usd, "1.000.00")).to eq 100
+      expect(string_to_price_cents(:usd, "1.2.3.4")).to eq 123
+    end
+
+    it "handles normal prices with a single decimal point" do
+      expect(string_to_price_cents(:usd, "9.99")).to eq 999
+      expect(string_to_price_cents(:usd, "100.00")).to eq 10_000
+      expect(string_to_price_cents(:usd, "0.50")).to eq 50
+    end
   end
 
   describe "#unit_scaling_factor" do
