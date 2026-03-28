@@ -10,8 +10,8 @@ describe "Rack::Attack throttle", type: :request do
   describe "forgot_password throttle with malformed JSON params" do
     it "does not raise TypeError when json_params contain non-Hash nested values" do
       post "/forgot_password.json",
-        params: { user: "not-a-hash" }.to_json,
-        headers: { "CONTENT_TYPE" => "application/json" }
+           params: { user: "not-a-hash" }.to_json,
+           headers: { "CONTENT_TYPE" => "application/json" }
 
       expect(response.status).not_to eq(500)
     end
